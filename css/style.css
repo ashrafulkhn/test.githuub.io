@@ -383,3 +383,32 @@
     max-width: 90%;
     max-height: 90%; /* Ensures the image never exceeds 90% of screen height */
 }
+
+#contact-info {
+    padding: 20px;
+    margin-top: 30px;
+    /* border-top: 2px solid #ddd; */
+    font-family: Arial, sans-serif;
+    text-align: left;
+}
+
+#contact-info h2 {
+    font-size: 24px;
+    color: #ddd;
+    margin-bottom: 10px;
+}
+
+#contact-info p {
+    margin: 5px 0;
+    color: #ddd;
+    font-size: 16px;
+}
+
+#contact-info a {
+    color:  #5eaee7;;
+    text-decoration: none;
+}
+
+#contact-info a:hover {
+    text-decoration: underline;
+}
