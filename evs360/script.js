@@ -36,23 +36,33 @@ function handleFormSubmit(event) {
 }
 
 function activateRelays(modules, gunNumber) {
-    // First, simulate clicking to deactivate any existing connections for the selected modules
-    modules.forEach(moduleNum => {
-        const pmIdx = moduleNum - 1;
-        if (assignments[pmIdx] !== -1) {
-            const existingRelay = document.querySelector(`.relay[data-pm="${pmIdx}"].on`);
+    const gunIdx = gunNumber - 1;
+    
+    // First, deactivate all relays connected to this gun
+    for (let pmIdx = 0; pmIdx < numPMs; pmIdx++) {
+        if (assignments[pmIdx] === gunIdx) {
+            const existingRelay = document.querySelector(`.relay[data-pm="${pmIdx}"][data-gun="${gunIdx}"]`);
             if (existingRelay) {
                 existingRelay.classList.remove('on');
                 assignments[pmIdx] = -1;
             }
         }
-    });
+    }
     
     // Then activate new connections
     modules.forEach(moduleNum => {
         const pmIdx = moduleNum - 1;
-        const gunIdx = gunNumber - 1;
         
+        // If this module is assigned to a different gun, deactivate that connection first
+        if (assignments[pmIdx] !== -1) {
+            const oldRelay = document.querySelector(`.relay[data-pm="${pmIdx}"].on`);
+            if (oldRelay) {
+                oldRelay.classList.remove('on');
+                assignments[pmIdx] = -1;
+            }
+        }
+        
+        // Activate the new connection
         const relay = document.querySelector(`.relay[data-pm="${pmIdx}"][data-gun="${gunIdx}"]`);
         if (relay) {
             relay.classList.add('on');
