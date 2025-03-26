@@ -1,0 +1,127 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.page-content {
+    max-width: 1200px;
+    width: 100%;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.pm-row {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.pm {
+    width: 60px;
+    height: 40px;
+    background-color: #ffdddd;
+    border: 1px solid #ff9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.relay {
+    width: 80px;
+    height: 30px;
+    background-color: #ddddff;
+    border: 1px solid #9999ff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.relay.on {
+    background-color: #aaffaa;
+    border-color: #55aa55;
+}
+
+.gun {
+    width: 60px;
+    height: 40px;
+    background-color: #ddffdd;
+    border: 1px solid #99ff99;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+
+.arduino {
+    margin-top: 30px;
+    padding: 15px;
+    background-color: #333;
+    color: white;
+    border-radius: 10px;
+    width: fit-content;
+}
+
+.legend {
+    margin: 20px 0;
+    padding: 10px;
+    background-color: #f0f0f0;
+    border-radius: 5px;
+}
+
+.control-form {
+    background-color: #f8f8f8;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    width: 100%;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.submit-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.submit-btn:hover {
+    background-color: #45a049;
+}
+
+.error-message {
+    color: #ff0000;
+    margin-top: 5px;
+    font-size: 14px;
+} 
