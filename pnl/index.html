@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Price Calculator</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Price Calculator</h1>
+    <form>
+      <div class="form-group">
+        <label for="purchasePrice">Purchase Price Basic:</label>
+        <input type="number" id="purchasePrice" placeholder="Enter purchase price" value="119.76">
+      </div>
+      <div class="form-group">
+        <label for="quantity">Quantity:</label>
+        <input type="number" id="quantity" placeholder="Enter quantity" value="1">
+      </div>
+      <div class="form-group">
+        <label for="billingPart">Billing Part Percentage Billed:</label>
+        <input type="number" id="billingPart" placeholder="Enter billing part percentage" value="100">
+      </div>
+      <div class="form-group">
+        <label for="gst">Percentage of GST:</label>
+        <input type="number" id="gst" placeholder="Enter GST percentage" value="28">
+      </div>
+      <div class="form-group">
+        <label for="cess">Percentage of CESS:</label>
+        <input type="number" id="cess" placeholder="Enter CESS percentage" value="12">
+      </div>
+      <div class="form-group">
+        <label for="profit">Profit Percentage:</label>
+        <input type="number" id="profit" placeholder="Enter profit percentage" value="6">
+      </div>
+      <button type="button" onclick="calculate()">Calculate</button>
+    </form>
+    <table>
+      <thead>
+        <tr>
+          <th>Parameter</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody id="resultTable">
+        <!-- Results will be displayed here -->
+      </tbody>
+    </table>
+    <div id="summary" class="summary">
+      <!-- Summary will be displayed here -->
+    </div>
+  </div>
+  <script src="script.js"></script>
+</body>
+</html>
