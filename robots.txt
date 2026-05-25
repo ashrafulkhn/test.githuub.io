@@ -1,0 +1,44 @@
+# robots.txt for https://ecobhoomi.in/
+# Allow all search engines to crawl public marketing pages.
+
+User-agent: *
+Allow: /
+Allow: /images/
+Allow: /css/
+Allow: /js/
+
+# Internal utility tools — not part of the marketing site
+Disallow: /evs360/
+Disallow: /tax/
+Disallow: /pnl/
+
+# Disallow common low-value paths
+Disallow: /*.json$
+Disallow: /CNAME
+
+# Allow crawling of CSS/JS so Google can render the page properly
+Allow: /*.css$
+Allow: /*.js$
+
+# Crawl-friendly directives
+User-agent: Googlebot
+Allow: /
+
+User-agent: Googlebot-Image
+Allow: /images/
+
+User-agent: Bingbot
+Allow: /
+
+# Block known bad/aggressive bots (optional, safe to keep)
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+
+User-agent: MJ12bot
+Disallow: /
+
+# Sitemap
+Sitemap: https://ecobhoomi.in/sitemap.xml

@@ -1,91 +1,170 @@
-// This script can be used for future functionality or interactive elements
+/* ============================================================
+   EcoBhoomi Enterprise — Site Scripts
+   ============================================================ */
 
-console.log("EcoBhoomi Enterprise website loaded successfully!");
+console.log('%cEcoBhoomi Enterprise', 'color:#FF6B1A;font-weight:bold;font-size:14px;');
 
-// Example: Add smooth scroll effect for navigation links
-document.querySelectorAll('nav ul li a').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
+/* ---------- Navbar scroll effect ---------- */
+const navbar = document.getElementById('navbar');
+const setNavbarState = () => {
+    if (window.scrollY > 30) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+};
+window.addEventListener('scroll', setNavbarState, { passive: true });
+setNavbarState();
 
-        const target = document.querySelector(this.getAttribute('href'));
-        target.scrollIntoView({
-            behavior: 'smooth'
-        });
+/* ---------- Mobile menu toggle ---------- */
+const navToggle = document.getElementById('navToggle');
+const navLinks = document.getElementById('navLinks');
+navToggle.addEventListener('click', () => {
+    navToggle.classList.toggle('open');
+    navLinks.classList.toggle('open');
+});
+navLinks.querySelectorAll('a').forEach(link => {
+    link.addEventListener('click', () => {
+        navToggle.classList.remove('open');
+        navLinks.classList.remove('open');
     });
 });
 
-// List of product image files
+/* ---------- Smooth scroll (fallback for older browsers) ---------- */
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href === '#' || href.length < 2) return;
+        const target = document.querySelector(href);
+        if (!target) return;
+        e.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+});
+
+/* ---------- Reveal-on-scroll ---------- */
+const revealEls = document.querySelectorAll('.reveal');
+const revealObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            entry.target.classList.add('in-view');
+            revealObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+revealEls.forEach(el => revealObserver.observe(el));
+
+/* ---------- Animated stats counter ---------- */
+const animateCount = (el) => {
+    const target = parseInt(el.dataset.target, 10) || 0;
+    const suffix = el.dataset.suffix || '';
+    const duration = 1600;
+    const start = performance.now();
+    const ease = t => 1 - Math.pow(1 - t, 3);
+    const tick = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        const value = Math.round(target * ease(p));
+        el.textContent = value + suffix;
+        if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+};
+const statObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            animateCount(entry.target);
+            statObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.4 });
+document.querySelectorAll('.stat-num').forEach(el => statObserver.observe(el));
+
+/* ---------- Back to top ---------- */
+const backToTop = document.getElementById('backToTop');
+const toggleBackToTop = () => {
+    if (window.scrollY > 600) backToTop.classList.add('show');
+    else backToTop.classList.remove('show');
+};
+window.addEventListener('scroll', toggleBackToTop, { passive: true });
+backToTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+/* ---------- Footer year ---------- */
+document.getElementById('year').textContent = new Date().getFullYear();
+
+/* ============================================================
+   PRODUCTS
+   ============================================================ */
 const products = [
-    'Bohagi Black Jeera Masala 160ML-250ML Rs.10-Rs.20.jpg', 
-    'Bohagi Nimbu Pani 160ML-250ML Rs.10-Rs.20.jpg', 
-    'Bohagi Shikanji 160ML-250ML Rs.10-Rs.20.jpg', 
+    'Bohagi Black Jeera Masala 160ML-250ML Rs.10-Rs.20.jpg',
+    'Bohagi Jeera Masala 160ML-250ML Rs.10-Rs.20.jpg',
+    'Bohagi Cola Jeera 160ML-250ML Rs.10-Rs.20.jpg',
+    'Bohagi Nimbu Pani 160ML-250ML Rs.10-Rs.20.jpg',
+    'Bohagi Nimbu Shikanji 160ML-250ML Rs.10-Rs.20.jpg',
+    'Bohagi Shikanji 160ML-250ML Rs.10-Rs.20.jpg',
+    'Bohagi Mango Kesar 160ML-250ML Rs.10-Rs.20.jpg',
     'Frego Energy Drink 160ML-250ML Rs.10-Rs.20.jpg',
+    'Frego Yak Bull 250ML Rs.30.jpg',
+    'Fregor Fruit Beer 250ML Rs.30.jpg',
+    'Fregor Mojito 250ML Rs.30.jpg',
     'Frizee Apple 160ML-250ML Rs.10-Rs.20.jpg',
     'Kenpo Cola 160ML-250ML Rs.10-Rs.20.jpg',
     'Kenpo Orange 160ML-250ML Rs.10-Rs.20.jpg',
     'Kenpo Clear Lemon 160ML-250ML Rs.10-Rs.20.jpg'
 ];
 
-// Function to remove file extensions
-function removeExtension(filename) {
-    return filename.replace(/\.(jpg|jpeg|png)$/i, '');
-}
+const removeExtension = (filename) => filename.replace(/\.(jpg|jpeg|png)$/i, '');
 
-// Function to generate product grid
-function loadProducts() {
-    const productGrid = document.getElementById('product-grid');
+const loadProducts = () => {
+    const grid = document.getElementById('product-grid');
+    if (!grid) return;
 
-    products.forEach((product) => {
-        // Remove the file extension
-        const cleanProduct = removeExtension(product);
-        
-        // Extract price and product name
-        const priceMatch = cleanProduct.match(/Rs\..+/); // Match "Rs." and anything after it
-        const price = priceMatch ? priceMatch[0] : 'Price not available'; // Get the matched price
-        const productName = cleanProduct.split('Rs.')[0].replace(/[-_]/g, ' ').trim(); // Get product name up to "Rs."
+    products.forEach((product, idx) => {
+        const clean = removeExtension(product);
+        const priceMatch = clean.match(/Rs\..+/);
+        const price = priceMatch ? priceMatch[0] : '';
+        const name = clean.split('Rs.')[0].replace(/[-_]/g, ' ').trim();
 
-        // Create product card
-        const productCard = document.createElement('div');
-        productCard.classList.add('product-card');
+        const card = document.createElement('div');
+        card.classList.add('product-card', 'reveal');
+        card.style.transitionDelay = `${(idx % 8) * 60}ms`;
 
-        // Product Image
         const img = document.createElement('img');
         img.src = `./images/products/${product}`;
-        img.alt = productName; // Use the processed product name for alt text
-        img.addEventListener('click', () => showModal(img.src)); // Add click event for modal
-        productCard.appendChild(img);
+        img.alt = name;
+        img.loading = 'lazy';
+        img.addEventListener('click', () => showModal(img.src, name));
+        card.appendChild(img);
 
-        // Product Name
-        const nameElement = document.createElement('h3');
-        nameElement.textContent = productName; // Use the processed product name
-        productCard.appendChild(nameElement);
+        const h3 = document.createElement('h3');
+        h3.textContent = name;
+        card.appendChild(h3);
 
-        // Product Price
-        const priceElement = document.createElement('p');
-        priceElement.textContent = price; // Display price
-        productCard.appendChild(priceElement);
-
-        // Append product card to the grid
-        productGrid.appendChild(productCard);
-    });
-}
-
-// Function to show modal with the clicked image
-function showModal(imageSrc) {
-    const modal = document.getElementById('image-modal');
-    const modalImage = document.getElementById('modal-image');
-
-    modalImage.src = imageSrc;
-    modalImage.style.maxHeight = `${window.innerHeight}px`; // Set max height to the window's inner height
-    modal.style.display = 'block';
-
-    // Close the modal when clicking outside the image
-    modal.addEventListener('click', (event) => {
-        if (event.target === modal) {
-            modal.style.display = 'none';
+        if (price) {
+            const p = document.createElement('p');
+            p.textContent = `MRP: ${price}`;
+            card.appendChild(p);
         }
-    });
-}
 
-// Load products when the DOM is fully loaded
+        grid.appendChild(card);
+        revealObserver.observe(card);
+    });
+};
+
+/* ---------- Image modal ---------- */
+const modal = document.getElementById('image-modal');
+const modalImg = document.getElementById('modal-image');
+const modalClose = document.getElementById('modalClose');
+
+const showModal = (src, alt = '') => {
+    modalImg.src = src;
+    modalImg.alt = alt;
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+};
+const hideModal = () => {
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+};
+modalClose.addEventListener('click', hideModal);
+modal.addEventListener('click', (e) => { if (e.target === modal) hideModal(); });
+document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal.classList.contains('open')) hideModal(); });
+
+/* ---------- Init ---------- */
 document.addEventListener('DOMContentLoaded', loadProducts);

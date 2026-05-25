@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, follow">
+    <title>Page Not Found — EcoBhoomi Enterprise</title>
+    <meta name="description" content="The page you are looking for doesn't exist. Head back to the EcoBhoomi Enterprise homepage to explore our FMCG and soft-drink distribution services.">
+    <link rel="canonical" href="https://ecobhoomi.in/">
+    <link rel="icon" href="/favicon.ico" type="image/x-icon">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            background: linear-gradient(135deg, #061827, #0A2540 50%, #102E4F);
+            color: #fff;
+            text-align: center;
+            padding: 24px;
+            overflow: hidden;
+            position: relative;
+        }
+        body::before, body::after {
+            content: "";
+            position: absolute;
+            width: 540px; height: 540px;
+            border-radius: 50%;
+            filter: blur(110px);
+            opacity: .35;
+            pointer-events: none;
+            animation: floatBlob 14s ease-in-out infinite;
+        }
+        body::before { background: #FF6B1A; top: -180px; left: -120px; }
+        body::after { background: #00BFD8; bottom: -200px; right: -160px; animation-delay: -7s; }
+        @keyframes floatBlob {
+            0%,100% { transform: translate(0,0) scale(1); }
+            50%     { transform: translate(40px,-30px) scale(1.08); }
+        }
+        .wrap { position: relative; z-index: 2; max-width: 600px; }
+        img { height: 56px; margin-bottom: 28px; }
+        h1 {
+            font-size: clamp(5rem, 16vw, 9rem);
+            font-weight: 800;
+            line-height: 1;
+            background: linear-gradient(135deg, #FF6B1A, #00BFD8);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+        }
+        h2 { font-size: clamp(1.4rem, 3vw, 1.8rem); margin-bottom: 14px; }
+        p { color: rgba(255,255,255,.72); margin-bottom: 28px; }
+        a.btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #FF6B1A, #E63946);
+            color: #fff;
+            border-radius: 999px;
+            font-weight: 600;
+            text-decoration: none;
+            box-shadow: 0 14px 30px rgba(255,107,26,.35);
+            transition: transform .25s, box-shadow .25s;
+        }
+        a.btn:hover { transform: translateY(-2px); box-shadow: 0 18px 36px rgba(255,107,26,.45); }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <img src="/images/logo.png" alt="EcoBhoomi Enterprise">
+        <h1>404</h1>
+        <h2>This page wandered off the delivery route.</h2>
+        <p>The page you&rsquo;re looking for doesn&rsquo;t exist or has been moved. Let&rsquo;s get you back on track.</p>
+        <a class="btn" href="/">&larr; Return to Homepage</a>
+    </div>
+</body>
+</html>
