@@ -10,7 +10,7 @@
  * screen stays visible).
  * =========================================================== */
 
-const ASSETS = '../assets';
+const ASSETS = 'assets';
 
 /* Same files main.py loads from assets/images/ */
 const SYMBOLS = ['Bag', 'Bell', 'Bulb', 'Car', 'Clock', 'Coffee', 'Dumbel', 'Fish', 'Glass']
