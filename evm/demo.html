@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EVM — Live Demo</title>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="demo.css"/>
+</head>
+<body class="demo-body">
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">EVM</span>
+    <span class="brand-sub">Vote Printing Machine</span>
+  </div>
+  <nav>
+    <a href="index.html">Architecture</a>
+    <a class="active" href="demo.html">Demo</a>
+  </nav>
+</header>
+
+<main class="demo-main">
+
+  <!-- ============ LEFT : PHYSICAL KIOSK ============ -->
+  <section class="machine-col">
+
+    <div class="kiosk">
+
+      <!-- Top bezel: print windows side by side -->
+      <div class="kiosk-top">
+        <div class="kiosk-brand">VPM&nbsp;<span>·</span>&nbsp;01</div>
+
+        <div class="windows">
+          <!-- LEFT (Top printer) -->
+          <div class="print-window" id="topWindow">
+            <div class="glass" id="topGlass"></div>
+            <div class="paper-slip" id="topPaper">
+              <div class="paper-content" id="topPaperContent"></div>
+            </div>
+            <div class="window-tag"><span class="led" id="topLed"></span><span>LP0 · TOP</span></div>
+          </div>
+
+          <!-- RIGHT (Bottom printer) -->
+          <div class="print-window" id="bottomWindow">
+            <div class="glass" id="bottomGlass"></div>
+            <div class="paper-slip" id="bottomPaper">
+              <div class="paper-content" id="bottomPaperContent"></div>
+            </div>
+            <div class="window-tag"><span class="led" id="bottomLed"></span><span>LP1 · BOTTOM</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ GUI Screen (480x800) ============ -->
+      <div class="gui-frame">
+        <div class="gui" id="gui">
+
+          <!-- Screen 1: Home -->
+          <div class="screen" data-screen="home">
+            <div class="home-content">
+              <div class="brand-block">
+                <div class="brand-logo">VOTE</div>
+                <div class="brand-tag">printing machine</div>
+              </div>
+              <button type="button" class="primary-btn" data-action="goConstituency">CAST VOTE</button>
+              <div class="footer-row">
+                <button type="button" class="icon-btn" title="Power" data-action="power">⏻</button>
+                <button type="button" class="icon-btn" title="Settings" data-action="settings">⚙</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Screen 2: Constituency -->
+          <div class="screen" data-screen="constituency">
+            <p class="ask">Is your constituency<br/><i>'XYZ Constituency'</i>?</p>
+            <div class="btn-row">
+              <button type="button" class="yes" data-action="goGrid">Yes</button>
+              <button type="button" class="no"  data-action="terminated">No</button>
+            </div>
+            <div class="time-left">Time left: <span data-timer>100</span> s</div>
+          </div>
+
+          <!-- Screen 3: Grid -->
+          <div class="screen" data-screen="grid">
+            <div class="grid-title">Select your symbol</div>
+            <div class="grid"></div>
+          </div>
+
+          <!-- Screen 4: Confirm symbol -->
+          <div class="screen" data-screen="confirm-symbol">
+            <div class="big-symbol" id="bigSymbol"></div>
+            <p class="ask">Confirm if the image<br/>matches your vote?</p>
+            <div class="btn-row">
+              <button type="button" class="yes" data-action="acceptImage">Yes</button>
+              <button type="button" class="no"  data-action="goGrid">No</button>
+            </div>
+            <div class="time-left">Time left: <span data-timer>100</span> s</div>
+          </div>
+
+          <!-- Screen 5: Printing -->
+          <div class="screen" data-screen="printing">
+            <div class="printing-anim">
+              <div class="dots"><span></span><span></span><span></span></div>
+            </div>
+            <p class="ask">Printing your ballot…</p>
+            <p class="hint">Look at the <b id="printerSideLabel">selected</b> window above.</p>
+          </div>
+
+          <!-- Screen 6: Confirm print -->
+          <div class="screen" data-screen="confirm-print">
+            <div class="big-symbol" id="bigSymbolConfirm"></div>
+            <p class="ask">Confirm if the print<br/>matches your vote?</p>
+            <div class="btn-row">
+              <button type="button" class="yes" data-action="printVoted">Yes</button>
+              <button type="button" class="no"  data-action="printRejected">No</button>
+            </div>
+            <div class="time-left">Time left: <span data-timer>100</span> s</div>
+          </div>
+
+          <!-- Screen 7: Thanks -->
+          <div class="screen" data-screen="thanks">
+            <div class="check">✓</div>
+            <h2 class="thanks-h">Thank you for voting</h2>
+            <p class="thanks-p">All the best</p>
+            <button type="button" class="recycle" data-action="home" title="Done">↻</button>
+          </div>
+
+          <!-- Screen 8: Terminated -->
+          <div class="screen" data-screen="terminated">
+            <h2 class="term">Your voting<br/>is terminated.</h2>
+            <p class="term-sub">Go back to the<br/>polling booth officer.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ============ Status bar (LEDs + motors) ============ -->
+      <div class="kiosk-bottom">
+        <div class="status-item">
+          <span class="status-led green" id="greenLed"></span>
+          <span class="status-label">SYSTEM</span>
+        </div>
+        <div class="status-item">
+          <span class="status-led red" id="redLed"></span>
+          <span class="status-label">PRINT</span>
+        </div>
+        <div class="status-divider"></div>
+        <div class="status-item">
+          <span class="motor" id="topMotor"></span>
+          <span class="status-label">M-T</span>
+        </div>
+        <div class="status-item">
+          <span class="motor" id="bottomMotor"></span>
+          <span class="status-label">M-B</span>
+        </div>
+        <div class="status-divider"></div>
+        <div class="status-item roll-item">
+          <span class="roll" id="rollTop"><span class="roll-core"></span></span>
+          <span class="status-label">ROLL-T</span>
+        </div>
+        <div class="status-item roll-item">
+          <span class="roll" id="rollBottom"><span class="roll-core"></span></span>
+          <span class="status-label">ROLL-B</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ RIGHT : NARRATIVE + CONTROLS ============ -->
+  <aside class="info-col">
+
+    <div class="panel">
+      <div class="panel-label">Now</div>
+      <p class="step-title" id="stepTitle">Idle</p>
+      <p class="step-detail" id="stepDetail">
+        Kiosk is on the Home screen. System LED is on; both print windows are opaque.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Controls</div>
+      <div class="controls">
+        <button type="button" id="playBtn" class="btn primary">▶ Play full demo</button>
+        <button type="button" id="stepBtn" class="btn ghost">Step ›</button>
+        <button type="button" id="resetBtn" class="btn ghost">Reset</button>
+      </div>
+      <div class="row">
+        <label>Speed</label>
+        <input type="range" id="speed" min="0.5" max="3" step="0.1" value="1.2"/>
+        <span id="speedVal">1.2×</span>
+      </div>
+      <div class="row">
+        <label>Printer</label>
+        <select id="printerSel">
+          <option value="random">RANDOM</option>
+          <option value="top">TOP</option>
+          <option value="bottom">BOTTOM</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Legend</div>
+      <ul class="legend">
+        <li><span class="dot dot-green"></span> System LED</li>
+        <li><span class="dot dot-red"></span> Printing LED</li>
+        <li><span class="dot dot-amber"></span> Window LED (lights ballot)</li>
+        <li><span class="swatch opaque"></span> Glass opaque (GPIO LOW)</li>
+        <li><span class="swatch clear"></span> Glass transparent (GPIO HIGH)</li>
+      </ul>
+    </div>
+
+  </aside>
+
+</main>
+
+<script src="demo.js"></script>
+</body>
+</html>
