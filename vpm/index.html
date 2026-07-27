@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EVM – Vote Printing Machine | Architecture</title>
+<link rel="stylesheet" href="styles.css"/>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">EVM</span>
+    <span class="brand-sub">Vote Printing Machine</span>
+  </div>
+  <nav>
+    <a class="active" href="index.html">Architecture</a>
+    <a href="demo.html">Demo</a>
+  </nav>
+</header>
+
+<main class="page">
+
+  <section class="hero">
+    <div>
+      <h1>Architecture<br/><span class="muted">A Raspberry Pi voting kiosk with dual thermal printers, smart-glass print windows, and motorised paper handling.</span></h1>
+      <p class="lead">
+        The application is a single-file Tkinter kiosk (<code>main.py</code>) running fullscreen on a 480&times;800 portrait display.
+        It drives <strong>two thermal printers</strong>, <strong>two DC/Servo motors</strong>, <strong>two PDLC smart-glass panels</strong>, and a set of status LEDs &mdash; all over the Raspberry Pi GPIO header.
+      </p>
+      <div class="cta-row">
+        <a class="btn primary" href="demo.html">Open Animated Demo</a>
+        <a class="btn ghost" href="#flow">See Voting Flow</a>
+      </div>
+    </div>
+    <div class="device-illustration" aria-hidden="true">
+      <div class="device">
+        <div class="windows">
+          <div class="window"><div class="paper"></div></div>
+          <div class="window"><div class="paper"></div></div>
+        </div>
+        <div class="screen">
+          <img src="../assets/open_vote_window/background.png" alt="AiO VPS home screen (480×800)"/>
+        </div>
+        <div class="ratio-tag">Screen: 480 × 800 · 3:5 portrait</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="grid-2">
+    <div class="card">
+      <h2>Hardware Stack</h2>
+      <ul class="kv">
+        <li><b>Controller</b><span>Raspberry Pi (BCM GPIO)</span></li>
+        <li><b>Display</b><span>480 &times; 800 portrait touch</span></li>
+        <li><b>Printers</b><span>2 &times; 58&nbsp;mm thermal, USB <code>lp0</code>/<code>lp1</code></span></li>
+        <li><b>Motors</b><span>DC (default) / Servo / Both</span></li>
+        <li><b>Print Windows</b><span>2 &times; PDLC smart glass</span></li>
+        <li><b>LEDs</b><span>2 window LEDs + Green/Red status</span></li>
+        <li><b>Storage</b><span>SQLite (unique 12-digit barcodes)</span></li>
+      </ul>
+    </div>
+
+    <div class="card">
+      <h2>GPIO Pin Map (BCM)</h2>
+      <table>
+        <thead><tr><th>GPIO</th><th>Direction</th><th>Function</th></tr></thead>
+        <tbody>
+          <tr><td>23</td><td>OUT</td><td>Top DC motor</td></tr>
+          <tr><td>24</td><td>OUT</td><td>Bottom DC motor</td></tr>
+          <tr><td>12</td><td>PWM</td><td>Top Servo motor</td></tr>
+          <tr><td>13</td><td>PWM</td><td>Bottom Servo motor</td></tr>
+          <tr><td>27</td><td>OUT</td><td>Top smart-glass (HIGH = transparent)</td></tr>
+          <tr><td>17</td><td>OUT</td><td>Bottom smart-glass</td></tr>
+          <tr><td>4</td><td>OUT</td><td>Top window LED</td></tr>
+          <tr><td>22</td><td>OUT</td><td>Bottom window LED</td></tr>
+          <tr><td>6</td><td>OUT</td><td>Green status LED</td></tr>
+          <tr><td>5</td><td>OUT</td><td>Red &ldquo;printing&rdquo; LED</td></tr>
+          <tr><td>16</td><td>IN</td><td>Reset button</td></tr>
+          <tr><td>20, 21</td><td>OUT</td><td>Peripheral power latch</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Source Tree</h2>
+    <pre class="tree">evm/
+├── main.py               &larr; All GUI screens + hardware orchestration (~1873 lines)
+├── dcmotor.py            &larr; class DCMotor  (GPIO HIGH / LOW)
+├── servomotor.py         &larr; class ServoMotor (PWM @ 50 Hz)
+├── update_config.py      &larr; Standalone settings editor (config1.ini)
+├── config.ini            &larr; Runtime parameters
+├── requirements.txt      &larr; python-escpos, Pillow, ttkthemes, RPi.GPIO, python-barcode
+├── assets/
+│   ├── images/           &larr; Symbol icons: Bag, Bell, Bulb, Car, Clock, Coffee, Dumbel, Fish, Glass
+│   ├── open_vote_window/ &larr; Home screen art (background, Button, Power, Settings, Close)
+│   └── thank_you_screen/ &larr; background.png, recycle.png
+├── database/database.db  &larr; SQLite, unique EAN-13 barcodes
+├── output/               &larr; Last generated print previews (image / barcode)
+├── install/              &larr; systemd vpm.service, deploy.py, launcher.sh
+└── documents/            &larr; (this folder) Architecture &amp; Demo</pre>
+  </section>
+
+  <section class="card" id="flow">
+    <h2>Voting Flow &mdash; Screen-by-Screen</h2>
+    <ol class="flow">
+      <li><b>Home</b> &mdash; <code>open_vote_window()</code>. Hardware reset to defaults (glass OFF, LEDs OFF, green ON).</li>
+      <li><b>Constituency</b> &mdash; <code>show_constituency_screen()</code>. &ldquo;Is your constituency <i>XYZ</i>?&rdquo; Yes/No, 100&nbsp;s timer.</li>
+      <li><b>Symbol Grid</b> &mdash; <code>grid_screen()</code>. Scrollable 2-col grid of party symbols loaded from <code>assets/images/</code>.</li>
+      <li><b>Confirm Symbol</b> &mdash; <code>open_image_screen()</code>. Enlarged preview, Yes/No.</li>
+      <li><b>Print Stage</b> &mdash; <code>accept_image()</code> &rarr; <code>select_printer()</code> &rarr; <code>print_image()</code>. <em>Glass turns transparent, window LED lights, motor rolls paper out, printer prints rotated symbol image.</em></li>
+      <li><b>Confirm Print</b> &mdash; <code>confirm_print_screen()</code>. Yes &rarr; print <code>VOTED</code> + EAN-13 barcode. No &rarr; print <code>REJECTED</code>.</li>
+      <li><b>Thanks / Terminated</b> &mdash; <code>voting_thanks_screen()</code> or <code>voting_terminated_screen()</code>. Auto-returns Home.</li>
+      <li><b>Settings</b> (passcode) &mdash; <code>setting_screen()</code>. Editor for every <code>config.ini</code> section, persisted via <code>save_config()</code>.</li>
+    </ol>
+  </section>
+
+  <section class="grid-2">
+    <div class="card accent">
+      <h2>The Smart-Glass Choreography</h2>
+      <p>This is the signature behaviour of the kiosk &mdash; what happens between &ldquo;Yes, this is my symbol&rdquo; and the ballot being visible:</p>
+      <ol class="choreo">
+        <li>Random printer chosen (or fixed via <code>PRINTER_CONFIG.which_printer</code>).</li>
+        <li>Red LED ON, Green LED OFF.</li>
+        <li><strong>Smart glass</strong> of that window switches to <strong>transparent</strong>.</li>
+        <li><strong>Window LED</strong> below the glass turns ON, illuminating the ballot area.</li>
+        <li><strong>DC motor</strong> for that side starts rolling.</li>
+        <li>Thermal head prints the rotated symbol image.</li>
+        <li>After <code>motor_delay_time_*_motor</code> seconds the motor stops.</li>
+        <li>On confirm: a second pass prints <code>VOTED</code> + barcode (or <code>REJECTED</code>).</li>
+        <li>Return to Home &rarr; glass and LEDs OFF.</li>
+      </ol>
+    </div>
+
+    <div class="card">
+      <h2>config.ini Sections</h2>
+      <ul class="kv">
+        <li><b>IMAGE_PRINTING</b><span>Symbol size + frame</span></li>
+        <li><b>STATUS_PRINTING</b><span>Barcode width/height + frame</span></li>
+        <li><b>BLANK_PRINTING</b><span>Trailing blank slip dims</span></li>
+        <li><b>GRID_RESIZE / LARGE_RESIZE</b><span>Thumbnail vs preview</span></li>
+        <li><b>IMAGE</b><span>Rotation angle (&minus;90&deg;)</span></li>
+        <li><b>TIMERS</b><span>Timeouts &amp; motor delays</span></li>
+        <li><b>MOTOR_TYPE</b><span>DC / SERVO / BOTH</span></li>
+        <li><b>PRINTER_CONFIG</b><span>TOP / BOTTOM / RANDOM</span></li>
+        <li><b>SPEED</b><span>PWM &amp; motor speeds</span></li>
+        <li><b>CONSTITUENCY</b><span>Constituency name</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>Deployment</h2>
+    <p>Runs as a <code>systemd</code> service (<code>install/vpm.service</code>) auto-starting on boot. Logs to syslog and restarts on crash. The current user must be in the <code>lp</code> group for printer USB access.</p>
+  </section>
+
+  <footer>
+    <span>Open the <a href="demo.html">animated demo &rarr;</a></span>
+  </footer>
+</main>
+</body>
+</html>

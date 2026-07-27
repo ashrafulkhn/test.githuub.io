@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>EVM — Live Demo</title>
+<link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="demo.css"/>
+</head>
+<body class="demo-body">
+
+<header class="topbar">
+  <div class="brand">
+    <span class="brand-mark">EVM</span>
+    <span class="brand-sub">Vote Printing Machine</span>
+  </div>
+  <nav>
+    <a href="index.html">Architecture</a>
+    <a class="active" href="demo.html">Demo</a>
+  </nav>
+</header>
+
+<main class="demo-main">
+
+  <!-- ============ LEFT : PHYSICAL KIOSK ============ -->
+  <section class="machine-col">
+
+    <div class="kiosk">
+
+      <!-- Top bezel: print windows side by side -->
+      <div class="kiosk-top">
+        <div class="kiosk-brand">AiO&nbsp;VPS&nbsp;<span>·</span>&nbsp;POC</div>
+
+        <div class="windows">
+          <!-- LEFT (Top printer) -->
+          <div class="print-window" id="topWindow">
+            <div class="glass" id="topGlass"></div>
+            <div class="paper-slip" id="topPaper">
+              <div class="paper-content" id="topPaperContent"></div>
+            </div>
+            <div class="window-tag"><span class="led" id="topLed"></span><span>LP0 · TOP</span></div>
+          </div>
+
+          <!-- RIGHT (Bottom printer) -->
+          <div class="print-window" id="bottomWindow">
+            <div class="glass" id="bottomGlass"></div>
+            <div class="paper-slip" id="bottomPaper">
+              <div class="paper-content" id="bottomPaperContent"></div>
+            </div>
+            <div class="window-tag"><span class="led" id="bottomLed"></span><span>LP1 · BOTTOM</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============ GUI Screen — 1:1 replica of the 480×800 Tkinter UI ============ -->
+      <div class="gui-frame">
+        <div class="gui-viewport">
+          <div class="gui" id="gui">
+
+            <!-- Screen 1: Home  (open_vote_window) -->
+            <div class="screen abs" data-screen="home">
+              <img class="bg-img" src="assets/open_vote_window/background.png" alt="AiO VPS home screen"/>
+              <button type="button" class="img-btn" id="voteBtn" data-action="goConstituency" title="CLICK HERE TO VOTE">
+                <img src="assets/open_vote_window/Button.png" alt="CLICK HERE TO VOTE"/>
+              </button>
+              <button type="button" class="img-btn" id="powerBtn" data-action="power" title="Power">
+                <img src="assets/open_vote_window/Power.png" alt="Power"/>
+              </button>
+              <button type="button" class="img-btn" id="settingsBtn" data-action="settings" title="Settings">
+                <img src="assets/open_vote_window/Settings.png" alt="Settings"/>
+              </button>
+            </div>
+
+            <!-- Screen 2: Constituency  (show_constituency_screen) -->
+            <div class="screen flow" data-screen="constituency" data-seconds="100">
+              <p class="ask">Is your constituency<br/>'XYZ Constituency' ?</p>
+              <div class="btn-holder">
+                <button type="button" class="tk-btn yes" data-action="goGrid">Yes</button>
+                <button type="button" class="tk-btn no"  data-action="terminated">No</button>
+              </div>
+              <div class="time-left">Time Left to accept: 100 seconds</div>
+            </div>
+
+            <!-- Screen 3: Symbol grid  (grid_screen) -->
+            <div class="screen tk-scroll" data-screen="grid">
+              <div class="grid-inner"></div>
+            </div>
+
+            <!-- Screen 4: Confirm symbol  (open_image_screen) -->
+            <div class="screen flow" data-screen="confirm-symbol" data-seconds="100">
+              <div class="preview-img">
+                <img id="bigSymbol" src="assets/images/Car.png" alt="Selected symbol"/>
+              </div>
+              <p class="ask">Confirm if the image<br/>match your vote?</p>
+              <div class="btn-holder">
+                <button type="button" class="tk-btn yes" data-action="acceptImage">Yes</button>
+                <button type="button" class="tk-btn no"  data-action="goGrid">No</button>
+              </div>
+              <div class="time-left">Time Left to accept: 100 seconds</div>
+            </div>
+
+            <!-- Screen 5: Confirm print  (confirm_print_screen) -->
+            <div class="screen flow" data-screen="confirm-print" data-seconds="100">
+              <div class="preview-img">
+                <img id="bigSymbolConfirm" src="assets/images/Car.png" alt="Printed symbol"/>
+              </div>
+              <p class="ask">Confirm if the print<br/>match your vote?</p>
+              <div class="btn-holder">
+                <button type="button" class="tk-btn yes" data-action="printVoted">Yes</button>
+                <button type="button" class="tk-btn no"  data-action="printRejected">No</button>
+              </div>
+              <div class="time-left">Time Left to accept: 100 seconds</div>
+            </div>
+
+            <!-- Screen 6: Thanks  (voting_thanks_screen) -->
+            <div class="screen abs" data-screen="thanks" data-seconds="10">
+              <img class="bg-img" src="assets/thank_you_screen/background.png" alt="Thank you for Voting."/>
+              <button type="button" class="img-btn" id="recycleBtn" data-action="home" title="Done">
+                <img src="assets/thank_you_screen/recycle.png" alt="Restart"/>
+              </button>
+              <div class="time-left">Time Left to accept: 10 seconds</div>
+            </div>
+
+            <!-- Screen 7: Terminated  (voting_terminated_screen) -->
+            <div class="screen abs" data-screen="terminated" data-seconds="10">
+              <h2 class="term-h">Your Voting is terminated.</h2>
+              <p class="term-p">Go Back<br/>to the Polling Booth Officer</p>
+              <div class="time-left">Time Left to accept: 10 seconds</div>
+            </div>
+
+          </div>
+        </div>
+        <div class="gui-badge">SCREEN 480 × 800 · 3:5 PORTRAIT · 1:1 TKINTER LAYOUT</div>
+      </div>
+
+      <!-- ============ Status bar (LEDs + motors) ============ -->
+      <div class="kiosk-bottom">
+        <div class="status-item">
+          <span class="status-led green" id="greenLed"></span>
+          <span class="status-label">SYSTEM</span>
+        </div>
+        <div class="status-item">
+          <span class="status-led red" id="redLed"></span>
+          <span class="status-label">PRINT</span>
+        </div>
+        <div class="status-divider"></div>
+        <div class="status-item">
+          <span class="motor" id="topMotor"></span>
+          <span class="status-label">M-T</span>
+        </div>
+        <div class="status-item">
+          <span class="motor" id="bottomMotor"></span>
+          <span class="status-label">M-B</span>
+        </div>
+        <div class="status-divider"></div>
+        <div class="status-item roll-item">
+          <span class="roll" id="rollTop"><span class="roll-core"></span></span>
+          <span class="status-label">ROLL-T</span>
+        </div>
+        <div class="status-item roll-item">
+          <span class="roll" id="rollBottom"><span class="roll-core"></span></span>
+          <span class="status-label">ROLL-B</span>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ============ RIGHT : NARRATIVE + CONTROLS ============ -->
+  <aside class="info-col">
+
+    <div class="panel">
+      <div class="panel-label">Now</div>
+      <p class="step-title" id="stepTitle">Idle</p>
+      <p class="step-detail" id="stepDetail">
+        Kiosk is on the Home screen. System LED is on; both print windows are opaque.
+      </p>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Controls</div>
+      <div class="controls">
+        <button type="button" id="playBtn" class="btn primary">▶ Play full demo</button>
+        <button type="button" id="stepBtn" class="btn ghost">Step ›</button>
+        <button type="button" id="resetBtn" class="btn ghost">Reset</button>
+      </div>
+      <div class="row">
+        <label>Speed</label>
+        <input type="range" id="speed" min="0.5" max="3" step="0.1" value="1.2"/>
+        <span id="speedVal">1.2×</span>
+      </div>
+      <div class="row">
+        <label>Printer</label>
+        <select id="printerSel">
+          <option value="random">RANDOM</option>
+          <option value="top">TOP</option>
+          <option value="bottom">BOTTOM</option>
+        </select>
+      </div>
+      <div class="row">
+        <label>Screen</label>
+        <input type="range" id="scale" min="0.4" max="1" step="0.05" value="0.6"/>
+        <span id="scaleVal">288×480</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Design fidelity</div>
+      <ul class="legend">
+        <li><span class="fid">480×800</span> Same resolution &amp; 3:5 ratio as <code>root.geometry('480x800')</code></li>
+        <li><span class="fid">Assets</span> Real PNGs from <code>assets/</code> (home art, buttons, symbols)</li>
+        <li><span class="fid">Fonts</span> Candara — sizes &amp; weights as in <code>main.py</code></li>
+        <li><span class="fid">Colors</span> Yes <code>#4CAF50</code> / No <code>#F44336</code>, pressed <code>#388E3C</code>/<code>#D32F2F</code></li>
+      </ul>
+    </div>
+
+    <div class="panel">
+      <div class="panel-label">Legend</div>
+      <ul class="legend">
+        <li><span class="dot dot-green"></span> System LED</li>
+        <li><span class="dot dot-red"></span> Printing LED</li>
+        <li><span class="dot dot-amber"></span> Window LED (lights ballot)</li>
+        <li><span class="swatch opaque"></span> Glass opaque (GPIO LOW)</li>
+        <li><span class="swatch clear"></span> Glass transparent (GPIO HIGH)</li>
+      </ul>
+    </div>
+
+  </aside>
+
+</main>
+
+<script src="demo.js"></script>
+</body>
+</html>
