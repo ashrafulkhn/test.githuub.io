@@ -22,32 +22,32 @@
 
 <main class="demo-main">
 
-  <!-- ============ LEFT : PHYSICAL KIOSK ============ -->
-  <section class="machine-col">
+  <!-- ============ PHYSICAL KIOSK ============ -->
+  <section class="machine-col" id="kioskStage">
 
-    <div class="kiosk">
+    <button type="button" class="fs-restore" id="fsRestoreBtn" title="Exit full screen" aria-label="Exit full screen">
+      <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5"/></svg>
+    </button>
+
+    <div class="kiosk" id="kiosk">
+
+      <button type="button" class="fs-expand" id="fsExpandBtn" title="Full screen" aria-label="Full screen">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg>
+      </button>
 
       <!-- Top bezel: print windows side by side -->
       <div class="kiosk-top">
-        <div class="kiosk-brand">AiO&nbsp;VPS&nbsp;<span>·</span>&nbsp;POC</div>
-
         <div class="windows">
-          <!-- LEFT (Top printer) -->
+          <!-- LEFT (Top printer) — prints are laid on the roll by demo.js -->
           <div class="print-window" id="topWindow">
+            <div class="paper-roll"></div>
             <div class="glass" id="topGlass"></div>
-            <div class="paper-slip" id="topPaper">
-              <div class="paper-content" id="topPaperContent"></div>
-            </div>
-            <div class="window-tag"><span class="led" id="topLed"></span><span>LP0 · TOP</span></div>
           </div>
 
           <!-- RIGHT (Bottom printer) -->
           <div class="print-window" id="bottomWindow">
+            <div class="paper-roll"></div>
             <div class="glass" id="bottomGlass"></div>
-            <div class="paper-slip" id="bottomPaper">
-              <div class="paper-content" id="bottomPaperContent"></div>
-            </div>
-            <div class="window-tag"><span class="led" id="bottomLed"></span><span>LP1 · BOTTOM</span></div>
           </div>
         </div>
       </div>
@@ -72,7 +72,7 @@
             </div>
 
             <!-- Screen 2: Constituency  (show_constituency_screen) -->
-            <div class="screen flow" data-screen="constituency" data-seconds="100">
+            <div class="screen flow" data-screen="constituency">
               <p class="ask">Is your constituency<br/>'XYZ Constituency' ?</p>
               <div class="btn-holder">
                 <button type="button" class="tk-btn yes" data-action="goGrid">Yes</button>
@@ -87,7 +87,7 @@
             </div>
 
             <!-- Screen 4: Confirm symbol  (open_image_screen) -->
-            <div class="screen flow" data-screen="confirm-symbol" data-seconds="100">
+            <div class="screen flow" data-screen="confirm-symbol">
               <div class="preview-img">
                 <img id="bigSymbol" src="assets/images/Car.png" alt="Selected symbol"/>
               </div>
@@ -100,37 +100,108 @@
             </div>
 
             <!-- Screen 5: Confirm print  (confirm_print_screen) -->
-            <div class="screen flow" data-screen="confirm-print" data-seconds="100">
+            <div class="screen flow" data-screen="confirm-print">
               <div class="preview-img">
-                <img id="bigSymbolConfirm" src="assets/images/Car.png" alt="Printed symbol"/>
+                <img id="bigSymbolConfirm" src="assets/images/Car.png" alt="Your vote"/>
               </div>
               <p class="ask">Confirm if the print<br/>match your vote?</p>
               <div class="btn-holder">
-                <button type="button" class="tk-btn yes" data-action="printVoted">Yes</button>
-                <button type="button" class="tk-btn no"  data-action="printRejected">No</button>
+                <button type="button" class="tk-btn yes" id="printYesBtn" data-action="printVoted">Yes</button>
+                <button type="button" class="tk-btn no"  id="printNoBtn"  data-action="printRejected">No</button>
               </div>
-              <div class="time-left">Time Left to accept: 100 seconds</div>
+              <div class="time-left">Time Left to accept: 10 seconds</div>
             </div>
 
             <!-- Screen 6: Thanks  (voting_thanks_screen) -->
-            <div class="screen abs" data-screen="thanks" data-seconds="10">
+            <div class="screen abs" data-screen="thanks">
               <img class="bg-img" src="assets/thank_you_screen/background.png" alt="Thank you for Voting."/>
-              <button type="button" class="img-btn" id="recycleBtn" data-action="home" title="Done">
-                <img src="assets/thank_you_screen/recycle.png" alt="Restart"/>
+              <button type="button" class="img-btn recycle-btn" data-action="home" title="Home">
+                <img src="assets/thank_you_screen/recycle.png" alt="Home"/>
               </button>
               <div class="time-left">Time Left to accept: 10 seconds</div>
             </div>
 
             <!-- Screen 7: Terminated  (voting_terminated_screen) -->
-            <div class="screen abs" data-screen="terminated" data-seconds="10">
+            <div class="screen abs" data-screen="terminated">
+              <button type="button" class="img-btn recycle-btn" data-action="home" title="Home">
+                <img src="assets/thank_you_screen/recycle.png" alt="Home"/>
+              </button>
               <h2 class="term-h">Your Voting is terminated.</h2>
               <p class="term-p">Go Back<br/>to the Polling Booth Officer</p>
               <div class="time-left">Time Left to accept: 10 seconds</div>
             </div>
 
+            <!-- Screen 8: Settings  (setting_screen) -->
+            <div class="screen settings-screen" data-screen="settings">
+              <div class="set-head">
+                <h2>Settings</h2>
+              </div>
+
+              <div class="set-body">
+                <section class="set-section">
+                  <div class="set-label">Vote summary</div>
+                  <div class="stat-box">
+                    <div class="stat"><b id="statTotal">0</b><span>Total</span></div>
+                    <div class="stat accepted"><b id="statAccepted">0</b><span>Accepted</span></div>
+                    <div class="stat rejected"><b id="statRejected">0</b><span>Rejected</span></div>
+                  </div>
+                </section>
+
+                <section class="set-section">
+                  <div class="set-label">Printer</div>
+                  <div class="seg" data-choice="printer">
+                    <button type="button" data-value="TOP">Top</button>
+                    <button type="button" data-value="BOTTOM">Bottom</button>
+                    <button type="button" data-value="RANDOM">Random</button>
+                  </div>
+                </section>
+
+                <section class="set-section">
+                  <div class="set-label">Faulty prints</div>
+                  <div class="seg seg-2" data-choice="faultyPrints">
+                    <button type="button" data-value="true">On</button>
+                    <button type="button" data-value="false">Off</button>
+                  </div>
+                </section>
+
+                <section class="set-section">
+                  <div class="set-label">Screen timeouts</div>
+                  <label class="set-row"><span>Constituency</span>
+                    <span class="set-input"><input type="number" min="1" max="999" step="1" data-setting="timeouts.constituency"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Confirm symbol</span>
+                    <span class="set-input"><input type="number" min="1" max="999" step="1" data-setting="timeouts.confirmSymbol"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Confirm print</span>
+                    <span class="set-input"><input type="number" min="1" max="999" step="1" data-setting="timeouts.confirmPrint"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Thank you screen</span>
+                    <span class="set-input"><input type="number" min="1" max="999" step="1" data-setting="timeouts.thanks"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Terminated screen</span>
+                    <span class="set-input"><input type="number" min="1" max="999" step="1" data-setting="timeouts.terminated"/><em>sec</em></span></label>
+                </section>
+
+                <section class="set-section">
+                  <div class="set-label">Print timings</div>
+                  <label class="set-row"><span>Glass clear → motor start</span>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.glassToMotor"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Symbol print feed</span>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.symbolFeed"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Motor stop → next screen</span>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.motorSettle"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Voted / Rejected print feed</span>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.statusFeed"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Result → slip out, glass close</span>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.resultHold"/><em>sec</em></span></label>
+                </section>
+              </div>
+
+              <div class="set-foot">
+                <button type="button" class="set-btn ghost" data-action="settingsCancel">Cancel</button>
+                <button type="button" class="set-btn ghost" data-action="settingsDefaults">Defaults</button>
+                <button type="button" class="set-btn save"  data-action="settingsSave">Save</button>
+              </div>
+            </div>
+
           </div>
         </div>
-        <div class="gui-badge">SCREEN 480 × 800 · 3:5 PORTRAIT · 1:1 TKINTER LAYOUT</div>
       </div>
 
       <!-- ============ Status bar (LEDs + motors) ============ -->
@@ -152,83 +223,15 @@
           <span class="motor" id="bottomMotor"></span>
           <span class="status-label">M-B</span>
         </div>
-        <div class="status-divider"></div>
-        <div class="status-item roll-item">
-          <span class="roll" id="rollTop"><span class="roll-core"></span></span>
-          <span class="status-label">ROLL-T</span>
-        </div>
-        <div class="status-item roll-item">
-          <span class="roll" id="rollBottom"><span class="roll-core"></span></span>
-          <span class="status-label">ROLL-B</span>
-        </div>
       </div>
 
     </div>
   </section>
 
-  <!-- ============ RIGHT : NARRATIVE + CONTROLS ============ -->
-  <aside class="info-col">
-
-    <div class="panel">
-      <div class="panel-label">Now</div>
-      <p class="step-title" id="stepTitle">Idle</p>
-      <p class="step-detail" id="stepDetail">
-        Kiosk is on the Home screen. System LED is on; both print windows are opaque.
-      </p>
-    </div>
-
-    <div class="panel">
-      <div class="panel-label">Controls</div>
-      <div class="controls">
-        <button type="button" id="playBtn" class="btn primary">▶ Play full demo</button>
-        <button type="button" id="stepBtn" class="btn ghost">Step ›</button>
-        <button type="button" id="resetBtn" class="btn ghost">Reset</button>
-      </div>
-      <div class="row">
-        <label>Speed</label>
-        <input type="range" id="speed" min="0.5" max="3" step="0.1" value="1.2"/>
-        <span id="speedVal">1.2×</span>
-      </div>
-      <div class="row">
-        <label>Printer</label>
-        <select id="printerSel">
-          <option value="random">RANDOM</option>
-          <option value="top">TOP</option>
-          <option value="bottom">BOTTOM</option>
-        </select>
-      </div>
-      <div class="row">
-        <label>Screen</label>
-        <input type="range" id="scale" min="0.4" max="1" step="0.05" value="0.6"/>
-        <span id="scaleVal">288×480</span>
-      </div>
-    </div>
-
-    <div class="panel">
-      <div class="panel-label">Design fidelity</div>
-      <ul class="legend">
-        <li><span class="fid">480×800</span> Same resolution &amp; 3:5 ratio as <code>root.geometry('480x800')</code></li>
-        <li><span class="fid">Assets</span> Real PNGs from <code>assets/</code> (home art, buttons, symbols)</li>
-        <li><span class="fid">Fonts</span> Candara — sizes &amp; weights as in <code>main.py</code></li>
-        <li><span class="fid">Colors</span> Yes <code>#4CAF50</code> / No <code>#F44336</code>, pressed <code>#388E3C</code>/<code>#D32F2F</code></li>
-      </ul>
-    </div>
-
-    <div class="panel">
-      <div class="panel-label">Legend</div>
-      <ul class="legend">
-        <li><span class="dot dot-green"></span> System LED</li>
-        <li><span class="dot dot-red"></span> Printing LED</li>
-        <li><span class="dot dot-amber"></span> Window LED (lights ballot)</li>
-        <li><span class="swatch opaque"></span> Glass opaque (GPIO LOW)</li>
-        <li><span class="swatch clear"></span> Glass transparent (GPIO HIGH)</li>
-      </ul>
-    </div>
-
-  </aside>
-
 </main>
 
+<script src="settings.js"></script>
+<script src="vote-engine.js"></script>
 <script src="demo.js"></script>
 </body>
 </html>

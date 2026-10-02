@@ -12,19 +12,67 @@
 
 /* ---- layout ---- */
 .demo-main {
-  display: grid;
-  grid-template-columns: minmax(360px, 1fr) 360px;
-  gap: 28px;
-  padding: 28px clamp(16px, 3vw, 40px);
-  max-width: 1180px;
-  margin: 0 auto;
-  align-items: start;
-}
-@media (max-width: 1000px) {
-  .demo-main { grid-template-columns: 1fr; }
+  display: flex;
+  justify-content: center;
+  padding: 28px 16px;
 }
 
 .machine-col { display: flex; justify-content: center; }
+
+/* ===========================================================
+ * FULL SCREEN — the whole kiosk scaled to fit the display
+ * =========================================================== */
+.machine-col.is-fullscreen {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  align-items: center;
+  background: radial-gradient(120% 90% at 50% 0%, #f7f8fa, #dcdfe4);
+}
+.machine-col.is-fullscreen .kiosk {
+  flex: none;
+  transform: scale(var(--fit, 1));
+  transform-origin: center;
+}
+.machine-col.is-fullscreen .fs-expand { visibility: hidden; }
+html.fs-lock { overflow: hidden; }
+
+.fs-expand, .fs-restore {
+  display: flex; align-items: center; justify-content: center;
+  padding: 0;
+  cursor: pointer;
+}
+.fs-expand svg, .fs-restore svg {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.fs-expand {
+  width: 24px; height: 24px;
+  border: 1px solid #d9dce0;
+  border-radius: 6px;
+  background: #fff;
+  color: #8a8f99;
+}
+.fs-expand svg { width: 14px; height: 14px; }
+.fs-expand:hover { color: #15171c; border-color: #b5b9bf; }
+
+.fs-restore {
+  display: none;
+  position: absolute;
+  top: 16px; right: 16px;
+  width: 44px; height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(21, 23, 28, 0.82);
+  color: #fff;
+  z-index: 2;
+}
+.fs-restore svg { width: 22px; height: 22px; }
+.fs-restore:hover { background: #15171c; }
+.machine-col.is-fullscreen .fs-restore { display: flex; }
 
 /* ===========================================================
  * KIOSK CASING (portrait — sized from the scaled 480×800 screen)
@@ -57,18 +105,14 @@
  * TOP BEZEL: side-by-side print windows
  * =========================================================== */
 .kiosk-top {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 6px 4px 18px;
+  padding: 14px 4px 18px;
 }
-.kiosk-brand {
-  font-size: 10px;
-  letter-spacing: 4px;
-  color: #8a8f99;
-  font-weight: 600;
+/* full-screen toggle sits in the bezel's top-right corner */
+.kiosk > .fs-expand {
+  position: absolute;
+  top: 8px; right: 8px;
+  z-index: 1;
 }
-.kiosk-brand span { color: #c9ccd1; }
 
 .windows {
   display: grid;
@@ -79,7 +123,7 @@
 /* one print window = glass cutout + paper exit slot */
 .print-window {
   position: relative;
-  height: 120px;
+  height: 190px;
   border-radius: 6px;
   background: #1a1d22;                 /* dark interior visible through clear glass */
   border: 1px solid #c9ccd1;
@@ -108,25 +152,6 @@
 }
 .print-window.glass-on .glass { opacity: 0; }
 
-/* small status tag bottom-right of each window */
-.window-tag {
-  position: absolute;
-  bottom: 6px; right: 8px;
-  display: flex; align-items: center; gap: 6px;
-  font-size: 9px; letter-spacing: 2px;
-  color: #d9dce0;
-  background: rgba(15,17,22,0.55);
-  padding: 2px 6px; border-radius: 3px;
-  z-index: 6;
-}
-.window-tag .led {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #3a3e45;
-}
-.print-window.led-on .window-tag .led {
-  background: #ffc94a;
-  box-shadow: 0 0 6px #ffc94a;
-}
 /* a soft warm wash inside the window when LED on */
 .print-window::after {
   content: "";
@@ -140,36 +165,42 @@
   background: radial-gradient(70% 90% at 50% 70%, rgba(255,201,74,0.22) 0%, rgba(255,201,74,0) 70%);
 }
 
-/* paper slip slides up from below the window */
-.paper-slip {
+/* One continuous paper roll per window. It only ever feeds
+ * upward (demo.js moves it with translateY) and carries the
+ * dashed centre cut line along its whole length, under the prints. */
+.paper-roll {
   position: absolute;
-  left: 10px; right: 10px;
-  bottom: -140px;
-  height: 105px;
-  background: #ffffff;
-  border-radius: 1px;
-  box-shadow: 0 -3px 8px rgba(0,0,0,0.18);
-  display: flex; align-items: center; justify-content: center;
+  left: 8px; right: 8px; top: 0;
+  height: 4000px;
+  background:
+    linear-gradient(to bottom, #c4c8ce 0 6px, transparent 6px 12px) 50% 0 / 1px 12px repeat-y,
+    #ffffff;
+  box-shadow: 0 0 6px rgba(0,0,0,0.22);
   z-index: 2;
-  transition: bottom 2.2s cubic-bezier(.22, .61, .36, 1);
+  transition: transform 0s cubic-bezier(.33, 0, .25, 1);   /* duration set per feed */
 }
-.print-window.printing .paper-slip { bottom: -8px; }
 
-.paper-content {
-  width: 100%; padding: 0 8px;
+/* one print laid on the roll (symbol, VOTED, REJECTED) */
+.roll-print {
+  position: absolute;
+  left: 0; right: 0;
+  height: 165px;
+  padding: 0 8px;
   display: flex; align-items: center; justify-content: center; gap: 8px;
   font-family: "Courier New", monospace;
   color: #111;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 17px;
   letter-spacing: 1px;
 }
-.paper-content .slip-img {
-  width: 72px; height: 72px;
+/* VOTED: barcodes on both edges of the paper */
+.roll-print.voted { justify-content: space-between; padding: 0 6px; }
+.roll-print .slip-img {
+  width: 110px; height: 110px;
   object-fit: contain;
 }
-.paper-content .barcode-vert {
-  width: 8px; height: 70px;
+.roll-print .barcode-vert {
+  width: 12px; height: 135px;
   background: repeating-linear-gradient(
     to bottom,
     #111 0 2px, transparent 2px 4px,
@@ -208,14 +239,6 @@
   /* Same face as the Tkinter widgets. 20pt ≈ 27px, 15pt ≈ 20px, 9pt ≈ 12px */
   font-family: Candara, "Segoe UI", "Trebuchet MS", sans-serif;
 }
-.gui-badge {
-  margin-top: 8px;
-  text-align: center;
-  font-size: 9px;
-  letter-spacing: 2px;
-  color: #6a6f79;
-  font-weight: 600;
-}
 
 /* ---- screens ---- */
 .screen { position: absolute; inset: 0; background: #fff; display: none; }
@@ -249,8 +272,8 @@
 #powerBtn    { left: 39px;  top: 723px; width: 50px;  height: 50px; }
 #settingsBtn { left: 393px; top: 719px; width: 50px;  height: 50px; }
 
-/* voting_thanks_screen(): recycle button */
-#recycleBtn  { left: 400px; top: 20px;  width: 65px;  height: 65px; }
+/* voting_thanks_screen() / voting_terminated_screen(): recycle → Home */
+.recycle-btn { left: 400px; top: 20px;  width: 65px;  height: 65px; z-index: 1; }
 
 /* ---- question label (Candara 20pt bold ≈ 27px) ---- */
 .ask {
@@ -297,6 +320,7 @@
   background: #D32F2F;
   border-style: inset;
 }
+.tk-btn:disabled { opacity: .55; cursor: default; }
 
 /* ---- timer label: place(relx=0.5, rely=0.95), Candara 9pt ≈ 12px ---- */
 .time-left {
@@ -453,100 +477,130 @@
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-.roll {
-  width: 22px; height: 22px;
-  border-radius: 50%;
-  background: repeating-radial-gradient(circle at center, #f4f5f7 0 2px, #e0e2e6 2px 3px);
-  border: 1px solid #c9ccd1;
-  display: flex; align-items: center; justify-content: center;
-}
-.roll.spinning { animation: spin .8s linear infinite; }
-.roll-core {
-  width: 6px; height: 6px; border-radius: 50%;
-  background: #15171c;
-}
 
 /* ===========================================================
- * RIGHT-SIDE INFO PANEL
+ * Settings screen (setting_screen): header, scrolling body,
+ * fixed footer — all inside the 480×800 GUI space
  * =========================================================== */
-.info-col {
-  display: flex; flex-direction: column; gap: 16px;
+.screen.settings-screen.active {
+  display: flex;
+  flex-direction: column;
+  animation: fade .25s ease;
 }
-.panel {
+.set-head {
+  flex: none;
+  height: 84px;
+  display: flex; align-items: center;
+  padding: 0 28px;
+  background: #15171c;
+  color: #fff;
+}
+.set-head h2 {
+  margin: 0;
+  font-size: 30px;
+  letter-spacing: 1px;
+  color: #fff;
+  text-transform: none;
+}
+
+.set-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 22px 28px 8px;
+}
+.set-section { margin-bottom: 26px; }
+.set-label {
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: #6a6f79;
+}
+
+/* vote summary box */
+.stat-box {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 2px solid #15171c;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.stat {
+  padding: 16px 6px 14px;
+  text-align: center;
+  border-right: 1px solid #d9dce0;
+}
+.stat:last-child { border-right: 0; }
+.stat b { display: block; font-size: 46px; line-height: 1.05; color: #15171c; }
+.stat span { font-size: 16px; letter-spacing: 1px; color: #4a4f59; }
+.stat.accepted b { color: #388E3C; }
+.stat.rejected b { color: #D32F2F; }
+
+/* printer segmented control */
+.seg {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border: 2px solid #15171c;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.seg button {
+  height: 56px;
+  font: inherit;
+  font-size: 20px;
+  font-weight: bold;
   background: #fff;
-  border: 1px solid #e6e7ec;
-  border-radius: 10px;
-  padding: 18px;
+  color: #15171c;
+  border: 0;
+  border-right: 2px solid #15171c;
+  cursor: pointer;
+}
+.seg.seg-2 { grid-template-columns: repeat(2, 1fr); }
+.seg button:last-child { border-right: 0; }
+.seg button.on { background: #15171c; color: #fff; }
+
+/* label + number input rows */
+.set-row {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 12px;
+  padding: 9px 0;
+  border-bottom: 1px solid #eceef2;
+  font-size: 19px;
   color: #15171c;
 }
-.panel-label {
-  font-size: 10px; letter-spacing: 3px; color: #8a8f99;
-  font-weight: 700; margin-bottom: 8px;
+.set-input { display: flex; align-items: center; gap: 8px; flex: none; }
+.set-input input {
+  width: 96px; height: 44px;
+  font: inherit;
+  font-size: 20px;
+  text-align: center;
+  border: 2px solid #c9ccd1;
+  border-radius: 6px;
+  background: #fff;
+  color: #15171c;
 }
-.step-title  { margin: 0 0 6px; font-size: 16px; font-weight: 700; }
-.step-detail { margin: 0; line-height: 1.55; color: #4a4f59; font-size: 14px; }
+.set-input input:focus { outline: none; border-color: #15171c; }
+.set-input em { font-style: normal; font-size: 15px; color: #8a8f99; }
 
-.controls { display: flex; flex-wrap: wrap; gap: 8px; }
-.controls .btn { padding: 8px 14px; font-size: 13px; border-radius: 4px; }
-.controls .btn.primary {
-  background: #15171c; color: #fff; border: 0;
+/* footer buttons */
+.set-foot {
+  flex: none;
+  display: flex; gap: 12px;
+  padding: 16px 28px;
+  background: #f4f5f7;
+  border-top: 1px solid #d9dce0;
 }
-.controls .btn.primary:hover  { background: #2a2e36; }
-.controls .btn.ghost {
-  background: transparent; color: #15171c;
-  border: 1px solid #d9dce0;
-}
-.controls .btn.ghost:hover { background: #f4f5f7; }
-
-.row {
-  display: flex; align-items: center; gap: 10px;
-  margin-top: 10px;
-  font-size: 13px;
-}
-.row label { width: 60px; color: #8a8f99; font-size: 12px; letter-spacing: 1px; }
-.row input[type="range"] { flex: 1; }
-.row select {
+.set-btn {
   flex: 1;
-  background: #fff; color: #15171c;
-  border: 1px solid #d9dce0;
-  padding: 6px; border-radius: 4px;
-  font-size: 13px;
+  height: 62px;
+  font: inherit;
+  font-size: 20px;
+  font-weight: bold;
+  border-radius: 6px;
+  cursor: pointer;
 }
-#speedVal, #scaleVal { color: #15171c; font-size: 12px; min-width: 52px; text-align: right; }
-
-.legend { list-style: none; padding: 0; margin: 0; }
-.legend li {
-  display: flex; align-items: center; gap: 10px;
-  padding: 6px 0;
-  color: #4a4f59;
-  font-size: 13px;
-  border-bottom: 1px solid #f1f2f5;
-}
-.legend li:last-child { border: 0; }
-.legend .dot {
-  width: 10px; height: 10px; border-radius: 50%;
-  display: inline-block;
-  flex: none;
-}
-.legend .dot-green { background: #34c25b; box-shadow: 0 0 5px #34c25b; }
-.legend .dot-red   { background: #e0463e; box-shadow: 0 0 5px #e0463e; }
-.legend .dot-amber { background: #ffc94a; box-shadow: 0 0 5px #ffc94a; }
-.legend .swatch {
-  width: 22px; height: 12px; border-radius: 2px;
-  border: 1px solid #c9ccd1;
-  display: inline-block;
-  flex: none;
-}
-.legend .swatch.opaque { background: linear-gradient(180deg, #f8fafc, #e1e5ea); }
-.legend .swatch.clear  { background: #1a1d22; }
-.legend .fid {
-  flex: none;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 1px;
-  color: #2f6f3e;
-  background: #ecf7ee;
-  border: 1px solid #cfe9d4;
-  border-radius: 3px;
-  padding: 2px 6px;
-}
+.set-btn.ghost { background: #fff; color: #15171c; border: 2px solid #c9ccd1; }
+.set-btn.ghost:active { background: #eceef2; }
+.set-btn.save { background: #4CAF50; color: #fff; border: 2px outset #66bb6a; }
+.set-btn.save:active { background: #388E3C; border-style: inset; }
