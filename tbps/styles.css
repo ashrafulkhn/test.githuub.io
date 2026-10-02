@@ -1,6 +1,8 @@
 /* TBPS Documentation – minimalist theme */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
+/* light design only: never follow the system dark theme or browser auto-darkening */
+:root { color-scheme: only light; }
 
 body {
   font-family: "Inter", "Segoe UI", system-ui, -apple-system, sans-serif;

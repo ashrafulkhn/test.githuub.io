@@ -13,11 +13,11 @@ const KioskSettings = (() => {
     printer: 'RANDOM',
     faultyPrints: true,
     timeouts: Object.freeze({
-      constituency:  100,
-      confirmSymbol: 100,
-      confirmPrint:  10,
-      thanks:        10,
-      terminated:    10
+      constituency:  5,
+      confirmSymbol: 5,
+      confirmPrint:  5,
+      thanks:        5,
+      terminated:    5
     }),
     transitions: Object.freeze({
       printStart:  0.5,

@@ -125,12 +125,12 @@ html.fs-lock { overflow: hidden; }
   position: relative;
   height: 190px;
   border-radius: 6px;
-  background: #1a1d22;                 /* dark interior around the paper */
-  border: 1px solid #c9ccd1;
+  background: #e3e5e9;                 /* light interior around the paper, blends with the casing */
+  border: 1px solid #d3d6db;
   overflow: hidden;
   box-shadow:
-    inset 0 1px 2px rgba(0,0,0,0.4),
-    inset 0 -1px 1px rgba(255,255,255,0.04);
+    inset 0 1px 2px rgba(0,0,0,0.08),
+    inset 0 -1px 1px rgba(255,255,255,0.5);
 }
 
 /* a soft warm wash inside the window while its light is on */
@@ -156,7 +156,7 @@ html.fs-lock { overflow: hidden; }
   background:
     linear-gradient(to bottom, #c4c8ce 0 6px, transparent 6px 12px) 50% 0 / 1px 12px repeat-y,
     #ffffff;
-  box-shadow: 0 0 6px rgba(0,0,0,0.22);
+  box-shadow: 0 0 4px rgba(0,0,0,0.12);
   z-index: 2;
   transition: transform 0s cubic-bezier(.33, 0, .25, 1);   /* duration set per feed */
 }
@@ -194,11 +194,11 @@ html.fs-lock { overflow: hidden; }
  * GUI SCREEN — exact 480×800 coordinate space, scaled by --s
  * =========================================================== */
 .gui-frame {
-  background: #0e1014;
+  background: #d5d8dd;                 /* light grey screen bezel, blends with the casing */
   padding: 10px;
   border-radius: 10px;
   margin: 4px 0 14px;
-  box-shadow: inset 0 0 0 1px #2a2e36;
+  box-shadow: inset 0 0 0 1px #c4c8ce;
 }
 .gui-viewport {
   position: relative;

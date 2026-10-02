@@ -60,7 +60,7 @@
 .pf .device .windows { gap: 10px; margin-bottom: 14px; }
 .pf .device .window {
   height: 120px;
-  background: #1a1d22;
+  background: #e3e5e9;
   overflow: hidden;
   display: flex; justify-content: center;
 }
