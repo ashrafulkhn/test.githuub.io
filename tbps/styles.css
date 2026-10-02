@@ -1,4 +1,4 @@
-/* EVM Documentation – minimalist theme */
+/* TBPS Documentation – minimalist theme */
 * { box-sizing: border-box; }
 html, body { margin: 0; padding: 0; }
 
@@ -61,6 +61,11 @@ pre {
   font-size: 14px;
   border-bottom: 2px solid transparent;
   padding-bottom: 4px;
+}
+@media (max-width: 760px) {
+  .topbar { padding: 14px 16px; }
+  .brand-sub { display: none; }
+  .topbar nav a { margin-left: 16px; }
 }
 .topbar nav a.active { color: #15171c; border-bottom-color: #15171c; }
 .topbar nav a:hover  { color: #15171c; }
@@ -231,11 +236,6 @@ footer {
   border: 1px solid #d9dce0;
   border-radius: 4px;
   overflow: hidden;
-}
-.device .screen img {
-  display: block;
-  width: 100%; height: 100%;
-  object-fit: cover;
 }
 .device .ratio-tag {
   margin-top: 10px;

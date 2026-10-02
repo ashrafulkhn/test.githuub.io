@@ -1,10 +1,11 @@
 /* ===========================================================
- * EVM – Kiosk settings (the demo's config.ini)
+ * TBPS – Kiosk settings (the demo's config.ini)
  * Persisted in the browser so they survive a page refresh.
  * Vote data is NOT stored here — it lives only in memory.
  * =========================================================== */
 const KioskSettings = (() => {
-  const KEY = 'vpm.settings.v1';
+  const KEY = 'tbps.settings.v1';
+  const LEGACY_KEY = 'vpm.settings.v1';   // name used before the folder was renamed to tbps
   const PRINTERS = ['RANDOM', 'TOP', 'BOTTOM'];
 
   /* all values in seconds */
@@ -19,11 +20,10 @@ const KioskSettings = (() => {
       terminated:    10
     }),
     transitions: Object.freeze({
-      glassToMotor: 0.5,
-      symbolFeed:   2,
-      motorSettle:  0.35,
-      statusFeed:   1.5,
-      resultHold:   1.8
+      printStart:  0.5,
+      symbolFeed:  2,
+      motorSettle: 0.35,
+      statusFeed:  1.5
     })
   });
 
@@ -50,7 +50,7 @@ const KioskSettings = (() => {
   }
 
   function load() {
-    try { return sanitize(JSON.parse(localStorage.getItem(KEY))); }
+    try { return sanitize(JSON.parse(localStorage.getItem(KEY) ?? localStorage.getItem(LEGACY_KEY))); }
     catch { return sanitize(null); }
   }
 

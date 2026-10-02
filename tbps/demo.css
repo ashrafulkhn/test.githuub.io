@@ -1,5 +1,5 @@
 /* ===========================================================
- * EVM Demo – kiosk chrome + 1:1 480×800 Tkinter GUI replica
+ * TBPS Demo – kiosk chrome + 1:1 480×800 Tkinter GUI replica
  *
  * The .gui element is laid out at the REAL resolution of the
  * device screen (480 × 800, 3:5 portrait — root.geometry in
@@ -120,12 +120,12 @@ html.fs-lock { overflow: hidden; }
   gap: 12px;
 }
 
-/* one print window = glass cutout + paper exit slot */
+/* one print window = open viewing cutout + paper exit slot (always visible) */
 .print-window {
   position: relative;
   height: 190px;
   border-radius: 6px;
-  background: #1a1d22;                 /* dark interior visible through clear glass */
+  background: #1a1d22;                 /* dark interior around the paper */
   border: 1px solid #c9ccd1;
   overflow: hidden;
   box-shadow:
@@ -133,26 +133,7 @@ html.fs-lock { overflow: hidden; }
     inset 0 -1px 1px rgba(255,255,255,0.04);
 }
 
-/* the smart-glass overlay (PDLC film) */
-.glass {
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(180deg, rgba(248,250,252,.92), rgba(225,229,234,.92));
-  transition: opacity 0.55s ease;
-  z-index: 3;
-  pointer-events: none;
-}
-/* faint sheen on the glass */
-.glass::after {
-  content: "";
-  position: absolute; inset: 0;
-  background:
-    linear-gradient(115deg, transparent 0 35%, rgba(255,255,255,.5) 50%, transparent 65%);
-  opacity: .35;
-}
-.print-window.glass-on .glass { opacity: 0; }
-
-/* a soft warm wash inside the window when LED on */
+/* a soft warm wash inside the window while its light is on */
 .print-window::after {
   content: "";
   position: absolute; inset: 0;

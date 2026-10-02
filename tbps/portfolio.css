@@ -1,5 +1,5 @@
 /* ===========================================================
- * AiO VPS – overview / portfolio page (index.html only)
+ * TBPS – overview / portfolio page (index.html only)
  * Builds on styles.css: same ink (#15171c), greys and type.
  * =========================================================== */
 :root {
@@ -64,7 +64,24 @@
   overflow: hidden;
   display: flex; justify-content: center;
 }
-.pf .device .window.opaque { background: linear-gradient(180deg, #f8fafc, #e1e5ea); }
+/* the kiosk home screen (home-screen.css) at its real 480×800 size, scaled into the hero */
+.pf .device .screen { position: relative; }
+.mini-gui {
+  position: absolute;
+  top: 0; left: 0;
+  width: 480px; height: 800px;
+  background: #fff;
+  transform: scale(calc(262 / 480));     /* .screen inner width: 300 − 2×18 padding − 2px border */
+  transform-origin: top left;
+}
+/* every image size is explicit, so no generic img rule can stretch them */
+.pf .device .screen .mini-gui img { display: block; object-fit: contain; }
+.pf .device .screen .mini-gui .home-logo   { width: 215px; height: 84px; }
+.pf .device .screen .mini-gui [class^="mg-"] { position: absolute; }
+.pf .device .screen .mini-gui .mg-vote     { left: 50px;  top: 630px; width: 390px; height: 58px; }
+.pf .device .screen .mini-gui .mg-power    { left: 39px;  top: 723px; width: 50px;  height: 50px; }
+.pf .device .screen .mini-gui .mg-settings { left: 393px; top: 719px; width: 50px;  height: 50px; }
+
 .mini-roll {
   width: calc(100% - 12px);
   background:
@@ -264,26 +281,6 @@
 }
 .honest b { color: #fff; }
 .honest p { color: #c9ccd1; margin: 6px 0 0; }
-
-/* ---- under the hood ---- */
-.pf details {
-  background: #fff;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  margin-top: 14px;
-}
-.pf summary {
-  cursor: pointer;
-  padding: 18px 22px;
-  font-weight: 600;
-  list-style: none;
-  display: flex; justify-content: space-between; align-items: center;
-}
-.pf summary::-webkit-details-marker { display: none; }
-.pf summary::after { content: "+"; font-size: 20px; color: var(--ink-3); }
-.pf details[open] summary::after { content: "–"; }
-.pf details > .body { padding: 0 22px 22px; }
-.pf details pre { margin: 0; }
 
 /* ---- closing CTA ---- */
 .cta-band {

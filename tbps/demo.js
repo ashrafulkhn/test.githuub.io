@@ -1,7 +1,7 @@
 /* ===========================================================
- * EVM – Interactive Demo
+ * TBPS – Interactive Demo
  * State machine that mirrors main.py's screen flow plus
- * synchronised smart-glass / LED / motor / paper animation.
+ * synchronised window-light / LED / motor / paper animation.
  *
  * The GUI pane is a 1:1 replica of the 480×800 Tkinter UI:
  * real assets from assets/, real widget geometry, and the
@@ -95,67 +95,64 @@ function showScreen(name) {
 }
 
 /* ===========================================================
- * HARDWARE (LEDs, smart glass, motors, paper)
+ * HARDWARE (LEDs, window lights, motors, paper)
  * =========================================================== */
 const windowFor = (side) => side === 'top' ? topWindow : bottomWindow;
 
 function setLed(el, on) { el.classList.toggle('on', !!on); }
 
-function setGlass(side, on) {
-  const win = windowFor(side);
-  win.classList.toggle('glass-on', on);
-  win.classList.toggle('led-on', on);
+function setWindowLight(side, on) {
+  windowFor(side).classList.toggle('led-on', on);
 }
 function setMotor(side, on) {
   (side === 'top' ? topMotor : bottomMotor).classList.toggle('on', on);
 }
 
 /* Each window holds one continuous paper roll that only ever feeds
- * upward. A print is laid on the roll just below the window, then
- * the roll advances one FEED: the print comes to rest in view and
- * the previous print, with blank paper after it, leaves through the top. */
-const ROLL_FEED  = 205;   // print height (165) + blank paper between prints
-const PRINT_REST = 12;    // print's resting offset from the top of the window
-const ROLL_DASH  = 12;    // period of the centre cut line pattern
+ * upward and is always in view. A print is laid on the roll just
+ * below the window, then the roll advances one FEED: the print comes
+ * to rest in view and pushes the previous print out through the top.
+ * The last print (VOTED / REJECTED) simply stays in the window until
+ * the next vote on that printer. */
+const ROLL_FEED    = 205;   // print height + blank paper between prints
+const PRINT_HEIGHT = 165;   // matches .roll-print in demo.css
+const PRINT_REST   = 12;    // print's resting offset from the top of the window
+const ROLL_DASH    = 12;    // period of the centre cut line pattern
 
 const rolls = {
-  top:    { el: topWindow.querySelector('.paper-roll'),    pos: 0, seq: 0 },
-  bottom: { el: bottomWindow.querySelector('.paper-roll'), pos: 0, seq: 0 }
+  top:    { el: topWindow.querySelector('.paper-roll'),    pos: 0 },
+  bottom: { el: bottomWindow.querySelector('.paper-roll'), pos: 0 }
 };
 
-function advanceRoll(roll, seconds) {
-  roll.seq++;
-  roll.pos += ROLL_FEED;
-  roll.el.style.transitionDuration = `${seconds}s`;
+const printTop = (p) => parseFloat(p.style.top);
+
+/* Keeps the roll element short: prints already out of view are dropped,
+ * and the rest of the roll is shifted back by whole dash periods, so
+ * nothing on screen moves. */
+function rebaseRoll(roll) {
+  roll.el.querySelectorAll('.roll-print').forEach(p => {
+    if (printTop(p) + PRINT_HEIGHT <= roll.pos) p.remove();
+  });
+  const shift = roll.pos - (roll.pos % ROLL_DASH);
+  if (!shift) return;
+  roll.pos -= shift;
+  roll.el.querySelectorAll('.roll-print').forEach(p => { p.style.top = `${printTop(p) - shift}px`; });
+  roll.el.style.transitionDuration = '0s';
   roll.el.style.transform = `translateY(${-roll.pos}px)`;
+  void roll.el.offsetHeight;   // commit before the next, animated, feed
 }
 
 function feedPrint(side, printDef, seconds) {
   const roll = rolls[side];
+  rebaseRoll(roll);
   const print = document.createElement('div');
   print.className = `roll-print ${printDef.cls || ''}`;
   print.style.top = `${roll.pos + ROLL_FEED + PRINT_REST}px`;
   print.innerHTML = printDef.html;
   roll.el.appendChild(print);
-  advanceRoll(roll, seconds);
-}
-
-/* Blank roll looks the same after any whole dash period, so once
- * only blank paper is in view the roll is quietly wound back. */
-function rewindRoll(roll) {
-  roll.el.querySelectorAll('.roll-print').forEach(p => p.remove());
-  roll.pos %= ROLL_DASH;
-  roll.el.style.transitionDuration = '0s';
+  roll.pos += ROLL_FEED;
+  roll.el.style.transitionDuration = `${seconds}s`;
   roll.el.style.transform = `translateY(${-roll.pos}px)`;
-}
-
-/* feed blank paper until the last print has left the window */
-function ejectPrints(side, seconds) {
-  const roll = rolls[side];
-  if (!roll.el.querySelector('.roll-print')) return;
-  advanceRoll(roll, seconds);
-  const seq = roll.seq;
-  setTimeout(() => { if (roll.seq === seq) rewindRoll(roll); }, seconds * 1000 + 50);
 }
 
 const printSymbol    = (sym) => ({ html: `<img class="slip-img" src="${sym.img}" alt=""/>` });
@@ -165,14 +162,13 @@ const PRINT_VOTED    = {
 };
 const PRINT_REJECTED = { html: `<span>REJECTED</span>` };
 
-/* hardware_default(): glass + LEDs off, motors stopped, paper out */
+/* hardware_default(): lights off, motors stopped; the paper stays where it is */
 function hardwareDefault() {
   setLed(greenLed, true);
   setLed(redLed, false);
   ['top', 'bottom'].forEach(side => {
     setMotor(side, false);
-    ejectPrints(side, 0.6);
-    setGlass(side, false);
+    setWindowLight(side, false);
   });
 }
 
@@ -230,8 +226,8 @@ async function startVote() {
 
   setLed(greenLed, false);
   setLed(redLed, true);
-  setGlass(side, true);
-  await pause(t.glassToMotor);
+  setWindowLight(side, true);
+  await pause(t.printStart);
 
   setMotor(side, true);
   feedPrint(side, printSymbol(symbolByName(scenario.printedImage)), t.symbolFeed);
@@ -266,7 +262,7 @@ function finalizeVote(response) {
   if (record) showResult(record, activeVote.side);
 }
 
-/* print VOTED / REJECTED, then the thanks / terminated screen */
+/* print VOTED / REJECTED (it stays in the window), then the thanks / terminated screen */
 async function showResult(record, side) {
   busy = true;
   const accepted = record.decision === 'ACCEPTED';
@@ -281,16 +277,10 @@ async function showResult(record, side) {
 
   setLed(redLed, false);
   setLed(greenLed, true);
+  setWindowLight(side, false);
   activeVote = null;
   showScreen(accepted ? 'thanks' : 'terminated');
-  busy = false;            // the recycle button is usable from here on
-
-  await pause(t.resultHold);
-  setMotor(side, true);
-  ejectPrints(side, t.statusFeed);
-  await pause(t.statusFeed);
-  setMotor(side, false);
-  setGlass(side, false);
+  busy = false;
 }
 
 /* ===========================================================

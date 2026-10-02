@@ -1,0 +1,60 @@
+/* ===========================================================
+ * TBPS kiosk home screen, drawn in code on the 480×800 GUI
+ * space (replaces the old fixed background.png artwork).
+ * Shared by demo.html (live kiosk) and index.html (hero).
+ * =========================================================== */
+.home-art {
+  position: absolute;
+  top: 0; left: 0;
+  width: 480px;
+  height: 620px;                       /* stays clear of the vote button at y=630 */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  color: #111;
+  font-family: Candara, "Segoe UI", "Trebuchet MS", sans-serif;
+}
+.home-art p { margin: 0; color: inherit; line-height: 1.3; }   /* isolate from page paragraph styles */
+
+.home-logo { display: block; width: 215px; height: 84px; margin-top: 10px; }
+
+.home-title {
+  margin: 30px 0 0;
+  max-width: 430px;
+  font-size: 27px;
+  font-weight: bold;
+  line-height: 1.25;
+  letter-spacing: 0;
+  text-transform: none;
+  color: #111;
+}
+.home-abbr {
+  margin-top: 4px;
+  font-size: 26px;
+  font-weight: bold;
+  letter-spacing: 2px;
+}
+
+.home-art .home-poc {
+  margin-top: 28px;
+  font-size: 22px;
+  font-weight: bold;
+  line-height: 1.45;
+}
+
+.home-art .home-invention {
+  margin-top: 46px;
+  font-size: 24px;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+}
+.home-patents { font-size: 22px; font-style: italic; }
+
+.home-art .home-inventor {
+  margin-top: 22px;
+  font-size: 21px;
+  line-height: 1.45;
+}
+.home-inventor b { display: block; }
+.home-inventor b + b { font-size: 22px; }

@@ -1,5 +1,5 @@
 /* ===========================================================
- * EVM – Vote engine
+ * TBPS – Vote engine
  * Scenario generation, cycle management, decision rules and
  * the in-memory vote records for the current page session.
  *

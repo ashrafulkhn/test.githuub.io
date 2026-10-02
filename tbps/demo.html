@@ -3,16 +3,17 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EVM — Live Demo</title>
-<link rel="stylesheet" href="styles.css"/>
-<link rel="stylesheet" href="demo.css"/>
+<title>TBPS — Live Demo</title>
+<link rel="stylesheet" href="styles.css?v=4"/>
+<link rel="stylesheet" href="demo.css?v=4"/>
+<link rel="stylesheet" href="home-screen.css?v=4"/>
 </head>
 <body class="demo-body">
 
 <header class="topbar">
   <div class="brand">
-    <span class="brand-mark">EVM</span>
-    <span class="brand-sub">Vote Printing Machine</span>
+    <span class="brand-mark">TBPS</span>
+    <span class="brand-sub">Tamper-proof Ballot Printing System</span>
   </div>
   <nav>
     <a href="index.html">Architecture</a>
@@ -41,13 +42,11 @@
           <!-- LEFT (Top printer) — prints are laid on the roll by demo.js -->
           <div class="print-window" id="topWindow">
             <div class="paper-roll"></div>
-            <div class="glass" id="topGlass"></div>
           </div>
 
           <!-- RIGHT (Bottom printer) -->
           <div class="print-window" id="bottomWindow">
             <div class="paper-roll"></div>
-            <div class="glass" id="bottomGlass"></div>
           </div>
         </div>
       </div>
@@ -59,7 +58,15 @@
 
             <!-- Screen 1: Home  (open_vote_window) -->
             <div class="screen abs" data-screen="home">
-              <img class="bg-img" src="assets/open_vote_window/background.png" alt="AiO VPS home screen"/>
+              <div class="home-art">
+                <img class="home-logo" src="assets/open_vote_window/logo.png" alt="Horizons and Beyond"/>
+                <div class="home-title">Tamper-proof Ballot<br/>Printing System</div>
+                <div class="home-abbr">(TBPS)</div>
+                <p class="home-poc">Proof of Concept Device<br/>(POC)</p>
+                <p class="home-invention">Invention</p>
+                <p class="home-patents">(Patents Pending)</p>
+                <p class="home-inventor"><b>Inventor:</b><b>Gp. Capt. SM Ghouse</b>(Veteran)</p>
+              </div>
               <button type="button" class="img-btn" id="voteBtn" data-action="goConstituency" title="CLICK HERE TO VOTE">
                 <img src="assets/open_vote_window/Button.png" alt="CLICK HERE TO VOTE"/>
               </button>
@@ -180,17 +187,14 @@
 
                 <section class="set-section">
                   <div class="set-label">Print timings</div>
-                  <label class="set-row"><span>Glass clear → motor start</span>
-                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.glassToMotor"/><em>sec</em></span></label>
+                  <label class="set-row"><span>Print start delay</span>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.printStart"/><em>sec</em></span></label>
                   <label class="set-row"><span>Symbol print feed</span>
                     <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.symbolFeed"/><em>sec</em></span></label>
                   <label class="set-row"><span>Motor stop → next screen</span>
                     <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.motorSettle"/><em>sec</em></span></label>
                   <label class="set-row"><span>Voted / Rejected print feed</span>
-                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.statusFeed"/><em>sec</em></span></label>
-                  <label class="set-row"><span>Result → slip out, glass close</span>
-                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.resultHold"/><em>sec</em></span></label>
-                </section>
+                    <span class="set-input"><input type="number" min="0" max="30" step="0.05" data-setting="transitions.statusFeed"/><em>sec</em></span></label>                </section>
               </div>
 
               <div class="set-foot">
@@ -230,8 +234,8 @@
 
 </main>
 
-<script src="settings.js"></script>
-<script src="vote-engine.js"></script>
-<script src="demo.js"></script>
+<script src="settings.js?v=4"></script>
+<script src="vote-engine.js?v=4"></script>
+<script src="demo.js?v=4"></script>
 </body>
 </html>
