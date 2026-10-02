@@ -3,8 +3,10 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>EVM – Vote Printing Machine | Architecture</title>
+<title>AiO VPS – All-in-One Vote Printing System</title>
+<meta name="description" content="AiO VPS is a voting kiosk where every vote becomes a printed paper record the voter sees, confirms and can audit."/>
 <link rel="stylesheet" href="styles.css"/>
+<link rel="stylesheet" href="portfolio.css"/>
 </head>
 <body>
 <header class="topbar">
@@ -18,145 +20,447 @@
   </nav>
 </header>
 
-<main class="page">
+<main class="pf">
 
-  <section class="hero">
-    <div>
-      <h1>Architecture<br/><span class="muted">A Raspberry Pi voting kiosk with dual thermal printers, smart-glass print windows, and motorised paper handling.</span></h1>
-      <p class="lead">
-        The application is a single-file Tkinter kiosk (<code>main.py</code>) running fullscreen on a 480&times;800 portrait display.
-        It drives <strong>two thermal printers</strong>, <strong>two DC/Servo motors</strong>, <strong>two PDLC smart-glass panels</strong>, and a set of status LEDs &mdash; all over the Raspberry Pi GPIO header.
+  <!-- ================= HERO ================= -->
+  <section class="pf-hero">
+    <div class="pf-hero-grid">
+      <div>
+        <span class="eyebrow">AiO VPS · All-in-One Vote Printing System</span>
+        <h1>Every vote, printed on paper the voter can see&nbsp;— and confirm.</h1>
+        <p class="lead">
+          AiO VPS is a touch-screen voting kiosk that turns each vote into a physical printed record.
+          The voter watches their own ballot print behind a smart-glass window, checks that it matches their choice,
+          and only then is it sealed as <b>VOTED</b> with a unique barcode. The paper roll becomes evidence that
+          can be audited independently of any software.
+        </p>
+        <div class="cta-row">
+          <a class="btn primary" href="demo.html">Try the live demo</a>
+          <a class="btn ghost" href="#flow">How a vote works</a>
+        </div>
+      </div>
+
+      <div class="device-illustration" aria-hidden="true">
+        <div class="device">
+          <div class="windows">
+            <div class="window"><div class="mini-roll"><i></i><span>VOTED</span><i></i></div></div>
+            <div class="window opaque"></div>
+          </div>
+          <div class="screen">
+            <img src="assets/open_vote_window/background.png" alt=""/>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="highlights">
+      <div class="hl">
+        <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <b>Voter-verified</b>
+        <span>Each vote is checked by the voter on real paper, not on a screen.</span>
+      </div>
+      <div class="hl">
+        <svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg>
+        <b>Paper is the record</b>
+        <span>Every accepted and rejected ballot stays on one sealed paper roll.</span>
+      </div>
+      <div class="hl">
+        <svg viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10.5 10.5 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/></svg>
+        <b>Offline by design</b>
+        <span>Printing, barcodes and storage are all local. Voting needs no network.</span>
+      </div>
+      <div class="hl">
+        <svg viewBox="0 0 24 24"><path d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"/></svg>
+        <b>Unique barcode</b>
+        <span>Every accepted ballot carries its own one-time EAN-13 code.</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= PROBLEM ================= -->
+  <section id="problem">
+    <div class="sec-head">
+      <span class="eyebrow">The problem</span>
+      <h2 class="title">Voters are asked to trust what they cannot see.</h2>
+      <p class="intro">
+        Elections only work when people believe the result. Today's options force a trade-off between
+        speed and verifiability.
       </p>
-      <div class="cta-row">
-        <a class="btn primary" href="demo.html">Open Animated Demo</a>
-        <a class="btn ghost" href="#flow">See Voting Flow</a>
+    </div>
+    <div class="cards c3">
+      <div class="pcard">
+        <span class="num">01</span>
+        <h3>Screens ask for blind trust</h3>
+        <p>On a screen-only voting machine the voter presses a button and sees a light or a beep.
+          What was actually recorded inside the machine is invisible to them.</p>
+      </div>
+      <div class="pcard">
+        <span class="num">02</span>
+        <h3>Paper ballots are slow and error-prone</h3>
+        <p>Hand-marked ballots take a long time to count, and unclear or invalid marks can spoil
+          a voter's intent.</p>
+      </div>
+      <div class="pcard">
+        <span class="num">03</span>
+        <h3>Disputes need independent evidence</h3>
+        <p>When a result is questioned, there must be a record that does not depend on the
+          machine's own software, one that people can physically inspect.</p>
       </div>
     </div>
-    <div class="device-illustration" aria-hidden="true">
-      <div class="device">
-        <div class="windows">
-          <div class="window"><div class="paper"></div></div>
-          <div class="window"><div class="paper"></div></div>
-        </div>
-        <div class="screen">
-          <img src="assets/open_vote_window/background.png" alt="AiO VPS home screen (480×800)"/>
-        </div>
-        <div class="ratio-tag">Screen: 480 × 800 · 3:5 portrait</div>
+  </section>
+
+  <!-- ================= SOLUTION ================= -->
+  <section id="solution">
+    <div class="sec-head">
+      <span class="eyebrow">The solution</span>
+      <h2 class="title">One machine. The ease of a touch screen, the proof of paper.</h2>
+      <p class="intro">
+        AiO VPS combines a simple touch-screen ballot with a printed record that the voter personally
+        verifies. Nothing is counted on faith: the voter <b>sees</b> it, <b>confirms</b> it, and the paper
+        <b>proves</b> it.
+      </p>
+    </div>
+    <div class="pillars">
+      <div class="pillar">
+        <svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg>
+        <h3>See it</h3>
+        <p>The chosen symbol is printed on paper. A smart-glass window turns clear and a light
+          switches on so the voter can see the actual print, not a picture of it.</p>
+      </div>
+      <div class="pillar">
+        <svg viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></svg>
+        <h3>Confirm it</h3>
+        <p>The voter compares the paper with their choice and answers <b>Yes</b> or <b>No</b>.
+          The ballot is only sealed as VOTED once the printed paper has been checked.</p>
+      </div>
+      <div class="pillar">
+        <svg viewBox="0 0 24 24"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/></svg>
+        <h3>Prove it</h3>
+        <p>VOTED or REJECTED is printed on the same paper, accepted ballots get a unique barcode,
+          and the roll is wound into a sealed cassette for audit.</p>
       </div>
     </div>
   </section>
 
-  <section class="grid-2">
-    <div class="card">
-      <h2>Hardware Stack</h2>
-      <ul class="kv">
-        <li><b>Controller</b><span>Raspberry Pi (BCM GPIO)</span></li>
-        <li><b>Display</b><span>480 &times; 800 portrait touch</span></li>
-        <li><b>Printers</b><span>2 &times; 58&nbsp;mm thermal, USB <code>lp0</code>/<code>lp1</code></span></li>
-        <li><b>Motors</b><span>DC (default) / Servo / Both</span></li>
-        <li><b>Print Windows</b><span>2 &times; PDLC smart glass</span></li>
-        <li><b>LEDs</b><span>2 window LEDs + Green/Red status</span></li>
-        <li><b>Storage</b><span>SQLite (unique 12-digit barcodes)</span></li>
-      </ul>
+  <!-- ================= VOTING FLOW ================= -->
+  <section id="flow">
+    <div class="sec-head">
+      <span class="eyebrow">Voting flow</span>
+      <h2 class="title">From a single tap to a sealed paper ballot.</h2>
+      <p class="intro">Seven guided steps. Every screen has a countdown, so the machine never stays
+        stuck halfway through a vote.</p>
     </div>
-
-    <div class="card">
-      <h2>GPIO Pin Map (BCM)</h2>
-      <table>
-        <thead><tr><th>GPIO</th><th>Direction</th><th>Function</th></tr></thead>
-        <tbody>
-          <tr><td>23</td><td>OUT</td><td>Top DC motor</td></tr>
-          <tr><td>24</td><td>OUT</td><td>Bottom DC motor</td></tr>
-          <tr><td>12</td><td>PWM</td><td>Top Servo motor</td></tr>
-          <tr><td>13</td><td>PWM</td><td>Bottom Servo motor</td></tr>
-          <tr><td>27</td><td>OUT</td><td>Top smart-glass (HIGH = transparent)</td></tr>
-          <tr><td>17</td><td>OUT</td><td>Bottom smart-glass</td></tr>
-          <tr><td>4</td><td>OUT</td><td>Top window LED</td></tr>
-          <tr><td>22</td><td>OUT</td><td>Bottom window LED</td></tr>
-          <tr><td>6</td><td>OUT</td><td>Green status LED</td></tr>
-          <tr><td>5</td><td>OUT</td><td>Red &ldquo;printing&rdquo; LED</td></tr>
-          <tr><td>16</td><td>IN</td><td>Reset button</td></tr>
-          <tr><td>20, 21</td><td>OUT</td><td>Peripheral power latch</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="card">
-    <h2>Source Tree</h2>
-    <pre class="tree">evm/
-├── main.py               &larr; All GUI screens + hardware orchestration (~1873 lines)
-├── dcmotor.py            &larr; class DCMotor  (GPIO HIGH / LOW)
-├── servomotor.py         &larr; class ServoMotor (PWM @ 50 Hz)
-├── update_config.py      &larr; Standalone settings editor (config1.ini)
-├── config.ini            &larr; Runtime parameters
-├── requirements.txt      &larr; python-escpos, Pillow, ttkthemes, RPi.GPIO, python-barcode
-├── assets/
-│   ├── images/           &larr; Symbol icons: Bag, Bell, Bulb, Car, Clock, Coffee, Dumbel, Fish, Glass
-│   ├── open_vote_window/ &larr; Home screen art (background, Button, Power, Settings, Close)
-│   └── thank_you_screen/ &larr; background.png, recycle.png
-├── database/database.db  &larr; SQLite, unique EAN-13 barcodes
-├── output/               &larr; Last generated print previews (image / barcode)
-├── install/              &larr; systemd vpm.service, deploy.py, launcher.sh
-└── documents/            &larr; (this folder) Architecture &amp; Demo</pre>
-  </section>
-
-  <section class="card" id="flow">
-    <h2>Voting Flow &mdash; Screen-by-Screen</h2>
-    <ol class="flow">
-      <li><b>Home</b> &mdash; <code>open_vote_window()</code>. Hardware reset to defaults (glass OFF, LEDs OFF, green ON).</li>
-      <li><b>Constituency</b> &mdash; <code>show_constituency_screen()</code>. &ldquo;Is your constituency <i>XYZ</i>?&rdquo; Yes/No, 100&nbsp;s timer.</li>
-      <li><b>Symbol Grid</b> &mdash; <code>grid_screen()</code>. Scrollable 2-col grid of party symbols loaded from <code>assets/images/</code>.</li>
-      <li><b>Confirm Symbol</b> &mdash; <code>open_image_screen()</code>. Enlarged preview, Yes/No.</li>
-      <li><b>Print Stage</b> &mdash; <code>accept_image()</code> &rarr; <code>select_printer()</code> &rarr; <code>print_image()</code>. <em>Glass turns transparent, window LED lights, motor rolls paper out, printer prints rotated symbol image.</em></li>
-      <li><b>Confirm Print</b> &mdash; <code>confirm_print_screen()</code>. Yes &rarr; print <code>VOTED</code> + EAN-13 barcode. No &rarr; print <code>REJECTED</code>.</li>
-      <li><b>Thanks / Terminated</b> &mdash; <code>voting_thanks_screen()</code> or <code>voting_terminated_screen()</code>. Auto-returns Home.</li>
-      <li><b>Settings</b> (passcode) &mdash; <code>setting_screen()</code>. Editor for every <code>config.ini</code> section, persisted via <code>save_config()</code>.</li>
+    <ol class="timeline">
+      <li>
+        <span class="dot">1</span>
+        <h3>Start</h3>
+        <p>The voter taps <b>Click here to vote</b>. The machine starts from a known safe state:
+          print windows opaque, print light off.</p>
+      </li>
+      <li>
+        <span class="dot">2</span>
+        <h3>Constituency check</h3>
+        <p>"Is your constituency XYZ?" A voter at the wrong booth is stopped before choosing
+          anything and sent to the polling officer.</p>
+      </li>
+      <li>
+        <span class="dot">3</span>
+        <h3>Choose a symbol</h3>
+        <p>Large symbols in a simple scrolling grid, readable at a glance and usable whatever
+          the voter's literacy level.</p>
+      </li>
+      <li>
+        <span class="dot">4</span>
+        <h3>Confirm the choice</h3>
+        <p>An enlarged preview of the selected symbol. <b>No</b> returns to the grid, so a
+          mis-tap is harmless.</p>
+      </li>
+      <li>
+        <span class="dot">5</span>
+        <h3>Print</h3>
+        <p>A printer is selected, its smart-glass window turns transparent, the window light comes on,
+          and the symbol is printed and fed up into view.</p>
+      </li>
+      <li>
+        <span class="dot">6</span>
+        <h3>Verify the paper</h3>
+        <p>The voter compares the printed paper with their choice and confirms it within a time limit.</p>
+      </li>
+      <li>
+        <span class="dot">7</span>
+        <h3>Seal the result</h3>
+        <p>The outcome is printed on the same paper, the roll moves on into the cassette, and the
+          window turns opaque again for the next voter.</p>
+        <div class="outcomes">
+          <span class="tag yes">✓ VOTED + unique barcode</span>
+          <span class="tag no">✕ REJECTED, voter sent to the officer</span>
+        </div>
+      </li>
     </ol>
   </section>
 
-  <section class="grid-2">
-    <div class="card accent">
-      <h2>The Smart-Glass Choreography</h2>
-      <p>This is the signature behaviour of the kiosk &mdash; what happens between &ldquo;Yes, this is my symbol&rdquo; and the ballot being visible:</p>
-      <ol class="choreo">
-        <li>Random printer chosen (or fixed via <code>PRINTER_CONFIG.which_printer</code>).</li>
-        <li>Red LED ON, Green LED OFF.</li>
-        <li><strong>Smart glass</strong> of that window switches to <strong>transparent</strong>.</li>
-        <li><strong>Window LED</strong> below the glass turns ON, illuminating the ballot area.</li>
-        <li><strong>DC motor</strong> for that side starts rolling.</li>
-        <li>Thermal head prints the rotated symbol image.</li>
-        <li>After <code>motor_delay_time_*_motor</code> seconds the motor stops.</li>
-        <li>On confirm: a second pass prints <code>VOTED</code> + barcode (or <code>REJECTED</code>).</li>
-        <li>Return to Home &rarr; glass and LEDs OFF.</li>
-      </ol>
-    </div>
-
-    <div class="card">
-      <h2>config.ini Sections</h2>
-      <ul class="kv">
-        <li><b>IMAGE_PRINTING</b><span>Symbol size + frame</span></li>
-        <li><b>STATUS_PRINTING</b><span>Barcode width/height + frame</span></li>
-        <li><b>BLANK_PRINTING</b><span>Trailing blank slip dims</span></li>
-        <li><b>GRID_RESIZE / LARGE_RESIZE</b><span>Thumbnail vs preview</span></li>
-        <li><b>IMAGE</b><span>Rotation angle (&minus;90&deg;)</span></li>
-        <li><b>TIMERS</b><span>Timeouts &amp; motor delays</span></li>
-        <li><b>MOTOR_TYPE</b><span>DC / SERVO / BOTH</span></li>
-        <li><b>PRINTER_CONFIG</b><span>TOP / BOTTOM / RANDOM</span></li>
-        <li><b>SPEED</b><span>PWM &amp; motor speeds</span></li>
-        <li><b>CONSTITUENCY</b><span>Constituency name</span></li>
-      </ul>
+  <!-- ================= WRONG PRINT ================= -->
+  <section id="wrong-print">
+    <div class="wrong">
+      <div>
+        <span class="eyebrow">Safeguard</span>
+        <h2 class="title">What if the print is wrong?</h2>
+        <p>Because the voter checks real paper, a wrong print cannot slip through unnoticed.
+          If the printed symbol does not match the choice, the ballot is marked
+          <b>REJECTED</b> on the paper itself. A spoilt ballot can never be quietly counted, and the
+          voter is directed to the polling officer.</p>
+        <p>The rejected print stays on the roll, so every problem leaves a visible, auditable trace
+          instead of disappearing.</p>
+        <p>The <a href="demo.html">live demo</a> deliberately misprints some ballots so you can watch
+          this safeguard work.</p>
+      </div>
+      <div class="mismatch" aria-label="Selected Car, printed Bulb, result Rejected">
+        <div class="mm-box">
+          <div class="frame"><img src="assets/images/Car.png" alt="Car"/></div>
+          <small>Chosen</small>
+        </div>
+        <span class="mm-arrow">→</span>
+        <div class="mm-box">
+          <div class="frame"><img src="assets/images/Bulb.png" alt="Bulb"/></div>
+          <small>Printed</small>
+        </div>
+        <span class="mm-arrow">→</span>
+        <div class="mm-box">
+          <div class="frame stamp">REJECTED</div>
+          <small>Result</small>
+        </div>
+      </div>
     </div>
   </section>
 
-  <section class="card">
-    <h2>Deployment</h2>
-    <p>Runs as a <code>systemd</code> service (<code>install/vpm.service</code>) auto-starting on boot. Logs to syslog and restarts on crash. The current user must be in the <code>lp</code> group for printer USB access.</p>
+  <!-- ================= INSIDE ================= -->
+  <section id="inside">
+    <div class="sec-head">
+      <span class="eyebrow">Inside the machine</span>
+      <h2 class="title">Affordable, proven components working as one.</h2>
+    </div>
+    <div class="cards c3">
+      <div class="pcard">
+        <h3>Touch display</h3>
+        <p>480 × 800 portrait touch screen running a locked, full-screen voting app.</p>
+      </div>
+      <div class="pcard">
+        <h3>Dual thermal printers</h3>
+        <p>Two independent 58&nbsp;mm printers, used in a fixed order or chosen at random for each vote.</p>
+      </div>
+      <div class="pcard">
+        <h3>Smart-glass windows</h3>
+        <p>PDLC glass stays opaque for privacy and turns clear only while the voter's own ballot is printing.</p>
+      </div>
+      <div class="pcard">
+        <h3>Motorised paper roll</h3>
+        <p>Motors feed the paper upward into a single re-rolled cassette. Ballots are never loose.</p>
+      </div>
+      <div class="pcard">
+        <h3>Status lights</h3>
+        <p>System and print lights show the polling officer exactly what the machine is doing.</p>
+      </div>
+      <div class="pcard">
+        <h3>Raspberry Pi controller</h3>
+        <p>Drives every printer, motor, light and glass panel, and keeps a local registry of issued barcodes.</p>
+      </div>
+    </div>
   </section>
 
-  <footer>
-    <span>Open the <a href="demo.html">animated demo &rarr;</a></span>
-  </footer>
+  <!-- ================= COMPARISON ================= -->
+  <section id="compare">
+    <div class="sec-head">
+      <span class="eyebrow">Why it is different</span>
+      <h2 class="title">The verifiability of paper, without its weaknesses.</h2>
+    </div>
+    <div class="compare-wrap">
+      <table class="compare">
+        <thead>
+          <tr><th></th><th>Paper ballot</th><th>Screen-only machine</th><th class="ours">AiO VPS</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Voter sees a physical record of their vote</td><td class="y">✓</td><td class="n">✕</td><td class="ours y">✓</td></tr>
+          <tr><td>Voter confirms that record before it counts</td><td class="y">✓</td><td class="n">✕</td><td class="ours y">✓</td></tr>
+          <tr><td>No ambiguous or invalid marks</td><td class="n">✕</td><td class="y">✓</td><td class="ours y">✓</td></tr>
+          <tr><td>Wrong prints marked at the booth, on the paper</td><td class="n">—</td><td class="n">—</td><td class="ours y">✓</td></tr>
+          <tr><td>Unique barcode on every accepted ballot</td><td class="n">✕</td><td class="n">✕</td><td class="ours y">✓</td></tr>
+          <tr><td>Audit possible without trusting the software</td><td class="y">✓</td><td class="n">✕</td><td class="ours y">✓</td></tr>
+          <tr><td>Record kept private except while voting</td><td class="y">✓</td><td class="n">—</td><td class="ours y">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="compare-note">
+      Some machines add a paper-trail viewer that shows a slip briefly behind glass. AiO VPS goes further:
+      the voter must actively confirm the printed paper, a wrong print is marked <b>REJECTED</b> on that
+      same paper, and every accepted ballot carries its own unique barcode.
+    </p>
+  </section>
+
+  <!-- ================= SECURITY ================= -->
+  <section id="security">
+    <div class="sec-head">
+      <span class="eyebrow">Security by design</span>
+      <h2 class="title">Built to resist tampering, and to expose it.</h2>
+      <p class="intro">Security does not rest on a single lock. Each layer below makes an attack harder,
+        and the paper record makes any attack visible.</p>
+    </div>
+    <div class="sec-grid">
+      <div class="sec-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M2 8.5a15 15 0 0 1 20 0M5 12a10.5 10.5 0 0 1 14 0M8.5 15.5a5 5 0 0 1 7 0"/><path d="M3 3l18 18"/></svg></span>
+        <div><h3>No remote attack surface</h3>
+          <p>Printing, barcode generation and storage all happen inside the machine, so it can run with
+            every network interface switched off. There is nothing to reach over the internet.</p></div>
+      </div>
+      <div class="sec-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M6 3h9l3 3v15H6z"/><path d="M9 9h6M9 13h6M9 17h4"/></svg></span>
+        <div><h3>Paper is the source of truth</h3>
+          <p>Software cannot change paper the voter has already verified, so the roll can always be
+            counted by hand to check any reported result.</p></div>
+      </div>
+      <div class="sec-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <div><h3>The voter is the final check</h3>
+          <p>Every ballot is verified by the one person who knows the intended vote, at the moment it is printed.</p></div>
+      </div>
+      <div class="sec-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><path d="M4 5v14M7 5v14M11 5v14M14 5v14M18 5v14M20 5v14"/></svg></span>
+        <div><h3>Unique barcodes</h3>
+          <p>Each accepted ballot gets a one-time EAN-13 code from the machine's registry, so duplicated
+            or forged slips stand out at reconciliation.</p></div>
+      </div>
+      <div class="sec-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg></span>
+        <div><h3>Locked-down kiosk</h3>
+          <p>The app starts as a system service in full-screen mode. Power and settings are
+            passcode-protected, and the voter never reaches a desktop or keyboard.</p></div>
+      </div>
+      <div class="sec-item">
+        <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg></span>
+        <div><h3>Sealed paper cassette</h3>
+          <p>The roll is re-wound into a single cassette. Ballots are never handled loose, so none can be
+            added or removed unnoticed.</p></div>
+      </div>
+    </div>
+    <div class="honest">
+      <b>A note on "unhackable".</b>
+      <p>No electronic system can honestly promise that it can never be attacked. AiO VPS offers a stronger and
+        checkable guarantee: altering the software cannot alter the paper the voter has already verified,
+        so tampering can be detected by auditing the roll.</p>
+    </div>
+  </section>
+
+  <!-- ================= UNDER THE HOOD ================= -->
+  <section id="tech">
+    <div class="sec-head">
+      <span class="eyebrow">Under the hood</span>
+      <h2 class="title">Technical architecture</h2>
+      <p class="intro">A single-file Tkinter kiosk (<code>main.py</code>) on a Raspberry Pi drives two thermal printers,
+        two DC/servo motors, two PDLC smart-glass panels and the status LEDs over the GPIO header.</p>
+    </div>
+
+    <div class="cards c2">
+      <div class="pcard">
+        <h3>Hardware stack</h3>
+        <ul class="kv">
+          <li><b>Controller</b><span>Raspberry Pi (BCM GPIO)</span></li>
+          <li><b>Display</b><span>480 × 800 portrait touch</span></li>
+          <li><b>Printers</b><span>2 × 58&nbsp;mm thermal, USB <code>lp0</code>/<code>lp1</code></span></li>
+          <li><b>Motors</b><span>DC (default) / Servo / Both</span></li>
+          <li><b>Print windows</b><span>2 × PDLC smart glass</span></li>
+          <li><b>LEDs</b><span>2 window LEDs + green/red status</span></li>
+          <li><b>Storage</b><span>SQLite (unique 12-digit barcodes)</span></li>
+        </ul>
+      </div>
+      <div class="pcard">
+        <h3>Print sequence</h3>
+        <ol class="choreo">
+          <li>Printer chosen (fixed or random, <code>PRINTER_CONFIG</code>).</li>
+          <li>Red LED on, green LED off.</li>
+          <li>Smart glass of that window turns transparent.</li>
+          <li>Window LED lights the ballot area.</li>
+          <li>Motor feeds the paper while the symbol prints.</li>
+          <li>Motor stops after <code>motor_delay_time_*</code>.</li>
+          <li>Second pass prints <code>VOTED</code> + barcode, or <code>REJECTED</code>.</li>
+          <li>Back to Home: glass and LEDs off.</li>
+        </ol>
+      </div>
+    </div>
+
+    <details>
+      <summary>GPIO pin map (BCM)</summary>
+      <div class="body">
+        <table>
+          <thead><tr><th>GPIO</th><th>Direction</th><th>Function</th></tr></thead>
+          <tbody>
+            <tr><td>23</td><td>OUT</td><td>Top DC motor</td></tr>
+            <tr><td>24</td><td>OUT</td><td>Bottom DC motor</td></tr>
+            <tr><td>12</td><td>PWM</td><td>Top servo motor</td></tr>
+            <tr><td>13</td><td>PWM</td><td>Bottom servo motor</td></tr>
+            <tr><td>27</td><td>OUT</td><td>Top smart glass (HIGH = transparent)</td></tr>
+            <tr><td>17</td><td>OUT</td><td>Bottom smart glass</td></tr>
+            <tr><td>4</td><td>OUT</td><td>Top window LED</td></tr>
+            <tr><td>22</td><td>OUT</td><td>Bottom window LED</td></tr>
+            <tr><td>6</td><td>OUT</td><td>Green status LED</td></tr>
+            <tr><td>5</td><td>OUT</td><td>Red "printing" LED</td></tr>
+            <tr><td>16</td><td>IN</td><td>Reset button</td></tr>
+            <tr><td>20, 21</td><td>OUT</td><td>Peripheral power latch</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details>
+      <summary>Configuration sections (config.ini)</summary>
+      <div class="body">
+        <ul class="kv">
+          <li><b>IMAGE_PRINTING</b><span>Symbol size + frame</span></li>
+          <li><b>STATUS_PRINTING</b><span>Barcode width/height + frame</span></li>
+          <li><b>BLANK_PRINTING</b><span>Trailing blank slip dimensions</span></li>
+          <li><b>GRID_RESIZE / LARGE_RESIZE</b><span>Thumbnail vs preview</span></li>
+          <li><b>IMAGE</b><span>Rotation angle (−90°)</span></li>
+          <li><b>TIMERS</b><span>Timeouts &amp; motor delays</span></li>
+          <li><b>MOTOR_TYPE</b><span>DC / SERVO / BOTH</span></li>
+          <li><b>PRINTER_CONFIG</b><span>TOP / BOTTOM / RANDOM</span></li>
+          <li><b>SPEED</b><span>PWM &amp; motor speeds</span></li>
+          <li><b>CONSTITUENCY</b><span>Constituency name</span></li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Source tree &amp; deployment</summary>
+      <div class="body">
+<pre class="tree">evm/
+├── main.py               ← All GUI screens + hardware orchestration
+├── dcmotor.py            ← class DCMotor  (GPIO HIGH / LOW)
+├── servomotor.py         ← class ServoMotor (PWM @ 50 Hz)
+├── update_config.py      ← Standalone settings editor
+├── config.ini            ← Runtime parameters
+├── requirements.txt      ← python-escpos, Pillow, ttkthemes, RPi.GPIO, python-barcode
+├── assets/               ← Symbols, home screen and thank-you art
+├── database/database.db  ← SQLite, unique EAN-13 barcodes
+├── output/               ← Last generated print previews
+└── install/              ← systemd vpm.service, deploy.py, launcher.sh</pre>
+        <p style="margin-top:14px">Runs as a <code>systemd</code> service (<code>install/vpm.service</code>) that starts on boot,
+          logs to syslog and restarts on crash. The service user must be in the <code>lp</code> group for printer access.</p>
+      </div>
+    </details>
+  </section>
+
+  <!-- ================= CTA ================= -->
+  <section id="try">
+    <div class="cta-band">
+      <span class="eyebrow">See it in action</span>
+      <h2 class="title">Cast a vote on the interactive kiosk.</h2>
+      <p>Choose a symbol, watch it print behind the smart glass, and see what happens when the
+        print doesn't match.</p>
+      <div class="cta-row">
+        <a class="btn primary" href="demo.html">Open the live demo</a>
+      </div>
+    </div>
+    <p class="credit">AiO VPS · Proof of Concept · Invention (Patents Pending) · Inventor: Gp. Capt. SM Ghouse (Veteran)</p>
+  </section>
+
 </main>
 </body>
 </html>
