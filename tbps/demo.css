@@ -125,7 +125,7 @@ html.fs-lock { overflow: hidden; }
   position: relative;
   height: 190px;
   border-radius: 6px;
-  background: #e3e5e9;                 /* light interior around the paper, blends with the casing */
+  /* background: #e3e5e9; */                /* light interior around the paper, blends with the casing */
   border: 1px solid #d3d6db;
   overflow: hidden;
   box-shadow:
@@ -194,7 +194,7 @@ html.fs-lock { overflow: hidden; }
  * GUI SCREEN — exact 480×800 coordinate space, scaled by --s
  * =========================================================== */
 .gui-frame {
-  background: #d5d8dd;                 /* light grey screen bezel, blends with the casing */
+  
   padding: 10px;
   border-radius: 10px;
   margin: 4px 0 14px;
